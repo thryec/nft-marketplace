@@ -7,6 +7,9 @@ import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import 'hardhat/console.sol';
 
 contract Marketplace is ReentrancyGuard {
+  Counters.Counter private _itemIds;
+  Counters.Counter private _collectionIds;
+
   constructor(address owner) {
     owner = payable(msg.sender);
   }
@@ -22,12 +25,14 @@ contract Marketplace is ReentrancyGuard {
   }
 
   struct Collection {
+    uint256 collectionId;
     address owner;
+    address nftContract;
     uint256 numberOfItems;
   }
 
-  // mapping between item struct and collection
   mapping(uint256 => Item) private itemIdToItem;
+  mapping(uint256 => Collection) private collectionIdToCollection;
 
   function createNewCollection(string collectionName) {}
 
@@ -37,11 +42,19 @@ contract Marketplace is ReentrancyGuard {
     uint256 price
   ) {}
 
-  function makeItemSale() {}
+  function makeItemSale() public payable nonReentrant {}
 
-  function getItemsInCollection() public view returns (Item[] memory) {}
+  function getAllMarketItems() public view returns (Item[] memory) {}
+
+  function getItemsInCollection(string collection)
+    public
+    view
+    returns (Item[] memory)
+  {}
 
   function getAllItemsOwned() public view returns (Item[] memory) {}
 
   function getAllItemsSold() public view returns (Item[] memory) {}
+
+  function transferToken(address owner, address receiver) public {}
 }
