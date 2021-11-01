@@ -5,6 +5,11 @@ const main = async () => {
   const marketplace = await Marketplace.deploy();
   await marketplace.deployed();
   console.log("Marketplace deployed to:", marketplace.address);
+
+  const NFT = await hre.ethers.getContractFactory("NFT");
+  const nft = await NFT.deploy(marketplace.address);
+  await nft.deployed();
+  console.log("NFT contract deployed to: ", nft.address);
 };
 
 const runMain = async () => {

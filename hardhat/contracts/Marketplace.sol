@@ -10,9 +10,7 @@ contract Marketplace is ReentrancyGuard {
   Counters.Counter private _itemIds;
   Counters.Counter private _collectionIds;
 
-  constructor(address owner) {
-    owner = payable(msg.sender);
-  }
+  address payable owner;
 
   struct Item {
     address nftContract;
@@ -31,22 +29,26 @@ contract Marketplace is ReentrancyGuard {
     uint256 numberOfItems;
   }
 
+  constructor() {
+    owner = payable(msg.sender);
+  }
+
   mapping(uint256 => Item) private itemIdToItem;
   mapping(uint256 => Collection) private collectionIdToCollection;
 
-  function createNewCollection(string collectionName) {}
+  function createNewCollection(string memory collectionName) public {}
 
   function createNewItem(
     address nftContract,
     uint256 _tokenId,
     uint256 price
-  ) {}
+  ) public {}
 
   function makeItemSale() public payable nonReentrant {}
 
   function getAllMarketItems() public view returns (Item[] memory) {}
 
-  function getItemsInCollection(string collection)
+  function getItemsInCollection(string memory collection)
     public
     view
     returns (Item[] memory)
@@ -56,5 +58,5 @@ contract Marketplace is ReentrancyGuard {
 
   function getAllItemsSold() public view returns (Item[] memory) {}
 
-  function transferToken(address owner, address receiver) public {}
+  function transferToken(uint256 _tokenId, address receiver) public {}
 }
