@@ -24,7 +24,7 @@ Users can view all the NFTs they have minted, bought, and sold on the platform.
 - ethers.js for interacting with the Ethereum Blockchain and its ecosystem
 - Waffle/Chai for testing smart contracts
 - React.js to organize and display values on the frontend
-- IPFS to store tokenURIs of the user's NFTs
+- IPFS to store NFT data
 
 ### Potential Add-Ons
 
