@@ -15,7 +15,7 @@ contract Marketplace is ReentrancyGuard {
   struct Item {
     address nftContract;
     uint256 itemId;
-    address payable seller;
+    address payable creator;
     address payable owner;
     uint256 price;
     bool isSold;
@@ -24,7 +24,7 @@ contract Marketplace is ReentrancyGuard {
 
   struct Collection {
     uint256 collectionId;
-    address owner;
+    address creator;
     address nftContract;
     uint256 numberOfItems;
   }
@@ -36,13 +36,30 @@ contract Marketplace is ReentrancyGuard {
   mapping(uint256 => Item) private itemIdToItem;
   mapping(uint256 => Collection) private collectionIdToCollection;
 
-  function createNewCollection(string memory collectionName) public {}
+  function createNewCollection(string memory collectionName)
+    public
+    returns (uint256 collectionName)
+  {}
 
-  function createNewItem(
+  function createNewItem(address nftContract, uint256 _tokenId) public {
+    // input
+  }
+
+  function listItemForSale(
     address nftContract,
     uint256 _tokenId,
     uint256 price
-  ) public {}
+  ) public payable nonReentrant {
+    itemIdToItem[_tokenId] = Item(
+      nftContract,
+      itemId,
+      payable(msg.sender),
+      payable(address(0)),
+      0,
+      false,
+      false
+    );
+  }
 
   function makeItemSale() public payable nonReentrant {}
 
