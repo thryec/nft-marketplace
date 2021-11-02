@@ -1,79 +1,62 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.3;
 
-import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
-import '@openzeppelin/contracts/utils/Counters.sol';
-import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
-import 'hardhat/console.sol';
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "hardhat/console.sol";
 
 contract Marketplace is ReentrancyGuard {
-  Counters.Counter private _itemIds;
-  Counters.Counter private _collectionIds;
+    Counters.Counter private _itemIds;
 
-  address payable owner;
-
-  struct Item {
-    address nftContract;
-    uint256 itemId;
-    address payable creator;
     address payable owner;
-    uint256 price;
-    bool isSold;
-    bool isListed;
-  }
 
-  struct Collection {
-    uint256 collectionId;
-    address creator;
-    address nftContract;
-    uint256 numberOfItems;
-  }
+    constructor() {
+        owner = payable(msg.sender);
+    }
 
-  constructor() {
-    owner = payable(msg.sender);
-  }
+    struct Item {
+        address nftContract;
+        uint256 itemId;
+        uint256 quantity;
+        address payable seller;
+        address payable owner;
+        uint256 price;
+        bool isSold;
+        bool isListed;
+    }
 
-  mapping(uint256 => Item) private itemIdToItem;
-  mapping(uint256 => Collection) private collectionIdToCollection;
+    event ItemCreated();
+    event ItemSold();
 
-  function createNewCollection(string memory collectionName)
-    public
-    returns (uint256 collectionName)
-  {}
+    mapping(uint256 => Item) private itemIdToItem;
 
-  function createNewItem(address nftContract, uint256 _tokenId) public {
-    // input
-  }
+    function listItemForSale(
+        address nftContract,
+        uint256 _tokenId,
+        uint256 _quantity,
+        uint256 price
+    ) public payable nonReentrant {
+        itemIdToItem[_tokenId] = Item(nftContract, _tokenId, _quantity, payable(msg.sender), payable(address(0)), price, false, true);
+    }
 
-  function listItemForSale(
-    address nftContract,
-    uint256 _tokenId,
-    uint256 price
-  ) public payable nonReentrant {
-    itemIdToItem[_tokenId] = Item(
-      nftContract,
-      itemId,
-      payable(msg.sender),
-      payable(address(0)),
-      0,
-      false,
-      false
-    );
-  }
+    function getTokenPrice(uint256 _tokenId) public view returns (uint256 price) {
+        return itemIdToItem[_tokenId].price;
+    }
 
-  function makeItemSale() public payable nonReentrant {}
+    function purchaseItem(address nftContract, uint256 itemId) public payable nonReentrant {
+        // require msg.value to be a multiple of price
+        // transfer item from seller to buyer
+        // emit item sold event
+    }
 
-  function getAllMarketItems() public view returns (Item[] memory) {}
+    function getAllMarketItems() public view returns (Item[] memory) {}
 
-  function getItemsInCollection(string memory collection)
-    public
-    view
-    returns (Item[] memory)
-  {}
+    function getAllItemsOwned() public view returns (Item[] memory) {}
 
-  function getAllItemsOwned() public view returns (Item[] memory) {}
+    function getAllItemsSold() public view returns (Item[] memory) {}
 
-  function getAllItemsSold() public view returns (Item[] memory) {}
-
-  function transferToken(uint256 _tokenId, address receiver) public {}
+    function transferToken(uint256 _tokenId, address receiver) public {
+        // use transferFrom function
+    }
 }
