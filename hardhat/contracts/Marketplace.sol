@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "hardhat/console.sol";
 
 contract Marketplace is ReentrancyGuard {
+    using Counters for Counters.Counter;
     Counters.Counter private _itemIds;
 
     address payable owner;
@@ -17,19 +18,33 @@ contract Marketplace is ReentrancyGuard {
 
     struct Item {
         address nftContract;
+        uint256 tokenId;
         uint256 itemId;
         uint256 quantity;
         address payable seller;
         address payable owner;
         uint256 price;
-        bool isSold;
         bool isListed;
+        bool isSold;
     }
 
-    event ItemCreated();
-    event ItemSold();
+    event ItemStatusChange(
+        address indexed nftContract,
+        uint256 indexed tokenId,
+        uint256 indexed itemId,
+        uint256 quantity,
+        address seller,
+        address owner,
+        uint256 price,
+        bool isListed,
+        bool isSold
+    );
 
     mapping(uint256 => Item) private itemIdToItem;
+
+    function getTokenPrice(uint256 _tokenId) public view returns (uint256 price) {
+        return itemIdToItem[_tokenId].price;
+    }
 
     function listItemForSale(
         address nftContract,
@@ -37,26 +52,48 @@ contract Marketplace is ReentrancyGuard {
         uint256 _quantity,
         uint256 price
     ) public payable nonReentrant {
-        itemIdToItem[_tokenId] = Item(nftContract, _tokenId, _quantity, payable(msg.sender), payable(address(0)), price, false, true);
+        require(price > 0, "Price must be least 1 wei");
+        require(msg.value == price);
+
+        _itemIds.increment();
+        uint256 itemId = _itemIds.current();
+
+        itemIdToItem[itemId] = Item(
+            nftContract,
+            _tokenId,
+            itemId,
+            _quantity,
+            payable(msg.sender),
+            payable(address(0)),
+            price,
+            false,
+            true
+        );
+
+        emit ItemStatusChange(nftContract, _tokenId, itemId, _quantity, address(0), msg.sender, price, true, false);
     }
 
-    function getTokenPrice(uint256 _tokenId) public view returns (uint256 price) {
-        return itemIdToItem[_tokenId].price;
+    function purchaseItem(
+        address nftContract,
+        uint256 _itemId,
+        uint256 _quantity
+    ) public payable nonReentrant {
+        uint price = itemIdToItem[_itemId].price;
+        uint tokenId = itemIdToItem[_itemId].tokenId;
+        require(
+            msg.value == price * _quantity,
+            "Please submit the correct amount of coins for desired quantity and price."
+        );
+
+        IERC1155(nftContract).safeTransferFrom(address(this), msg.sender, tokenId, _quantity, "0x00");
+
+        emit ItemStatusChange(nftContract, tokenId, _itemId, _quantity, address(this), msg.sender, price, true, true);
     }
 
-    function purchaseItem(address nftContract, uint256 itemId) public payable nonReentrant {
-        // require msg.value to be a multiple of price
-        // transfer item from seller to buyer
-        // emit item sold event
-    }
+    function getListedItems() public view returns (Item[] memory) {}
 
-    function getAllMarketItems() public view returns (Item[] memory) {}
+    function getItemsOwned() public view returns (Item[] memory) {}
 
-    function getAllItemsOwned() public view returns (Item[] memory) {}
+    function getItemsSold() public view returns (Item[] memory) {}
 
-    function getAllItemsSold() public view returns (Item[] memory) {}
-
-    function transferToken(uint256 _tokenId, address receiver) public {
-        // use transferFrom function
-    }
 }
