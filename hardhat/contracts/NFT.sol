@@ -18,17 +18,9 @@ contract NFT is ERC1155, Ownable {
         nftContractAddress = marketAddress;
     }
 
-    // add URIs for our unique tokens into the mapping
-    function setTokenURI(uint _tokenId, string memory newURI) public onlyOwner {
-        require(bytes(_uris[_tokenId]).length == 0, "Cannot set URI twice.");
-        _uris[_tokenId] = newURI;
-    }
+    // ------------------ Mutative Functions ---------------------- //
 
-    function getTokenURI(uint _tokenId) public view returns (string memory) {
-        return (_uris[_tokenId]);
-    }
-
-    function mint(
+    function mintToken(
         address account,
         uint tokenId,
         uint amount,
@@ -37,4 +29,32 @@ contract NFT is ERC1155, Ownable {
         _mint(account, tokenId, amount, data);
     }
 
+    // add URIs for our unique tokens into the mapping
+    function setTokenURI(uint _tokenId, string memory newURI) public onlyOwner {
+        bool owner = checkIfOwner(msg.sender, _tokenId);
+        require(owner == true);
+        require(bytes(_uris[_tokenId]).length == 0, "Cannot set URI twice.");
+        _uris[_tokenId] = newURI;
+    }
+
+    function burnTokens(
+        address from,
+        uint _tokenId,
+        uint amount
+    ) public { 
+        _burn(from, _tokenId, amount); 
+    }
+
+    // ------------------ Read Functions ---------------------- //
+
+    function getTokenURI(uint _tokenId) public view returns (string memory) {
+        return (_uris[_tokenId]);
+    }
+
+    function checkIfOwner(address caller, uint _tokenId) public view returns (bool) {
+        if (balanceOf(caller, _tokenId) > 0) {
+            return true;
+        }
+        return false;
+    }
 }

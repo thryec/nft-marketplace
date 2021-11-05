@@ -11,7 +11,7 @@ describe("Marketplace", function () {
     let buyer1;
     let buyer2;
 
-    before(async () => {
+    beforeEach(async () => {
         [contractOwner, seller1, seller2, buyer1, buyer2] = await ethers.getSigners();
         // deploy Marketplace and NFT contracts
         Marketplace = await ethers.getContractFactory("Marketplace");
@@ -24,13 +24,14 @@ describe("Marketplace", function () {
         await nft.deployed();
         const nftAddress = nft.address;
 
-        console.log(`Marketplace deployed at ${marketplaceAddress}, NFT deployed at ${nftaddress}`);
+        console.log(`Marketplace deployed at ${marketplaceAddress}, NFT deployed at ${nftAddress}`);
         // mint 2-3 items of various quantities
     });
 
     describe("Deployment", async () => {
         it("Should set the owner of both contracts as contractOwner", () => {});
         it("Should set the address of the Marketplace contract in the NFT contract correctly", () => {});
+        it("Should successfully set the tokenURI of the ERC1155 token", () => {});
         it("Should show a balance of >0 tokens in creator's wallet", () => {});
     });
 
