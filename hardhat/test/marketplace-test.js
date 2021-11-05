@@ -1,30 +1,48 @@
 const {expect} = require("chai");
 const {ethers} = require("hardhat");
+const BN = require("bn.js");
 
 describe("Marketplace", function () {
-    beforeEach(async () => {
+    let Marketplace;
+    let NFT;
+    let contractOwner;
+    let seller1;
+    let seller2;
+    let buyer1;
+    let buyer2;
+
+    before(async () => {
+        [contractOwner, seller1, seller2, buyer1, buyer2] = await ethers.getSigners();
         // deploy Marketplace and NFT contracts
-        const Marketplace = await ethers.getContractFactory("Marketplace");
+        Marketplace = await ethers.getContractFactory("Marketplace");
         const marketplace = await Marketplace.deploy("Hello, world!");
         await marketplace.deployed();
         const marketplaceAddress = marketplace.address;
 
-        const NFT = await ethers.getContractFactory("NFT");
+        NFT = await ethers.getContractFactory("NFT");
         const nft = await NFT.deploy(marketplaceAddress);
         await nft.deployed();
         const nftAddress = nft.address;
 
+        console.log(`Marketplace deployed at ${marketplaceAddress}, NFT deployed at ${nftaddress}`);
         // mint 2-3 items of various quantities
     });
 
-    it("Should list item for sale", async function () {
-        expect(await marketplace.greet()).to.equal("Hello, world!");
-        const setGreetingTx = await marketplace.setGreeting("Hola, mundo!");
-        await setGreetingTx.wait();
-        expect(await marketplace.greet()).to.equal("Hola, mundo!");
+    describe("Deployment", async () => {
+        it("Should set the owner of both contracts as contractOwner", () => {});
+        it("Should set the address of the Marketplace contract in the NFT contract correctly", () => {});
+        it("Should show a balance of >0 tokens in creator's wallet", () => {});
     });
 
-    it("Should allow owner of NFT to delist item", async function () {});
+    describe("Transactions", async () => {
+        it("Should transfer NFT to buyer when purchase is made", async function () {});
+        it("Should transfer price of NFT to seller when purchase is made", async function () {});
+        it("Should allow for transfers of multiple NFTs", async function () {});
+    });
 
-    it("Should allow owner of NFT to list an item they have purchased", async function () {});
+    describe("Listing Permissions", async () => {
+        it("Should list minted item for sale", () => {});
+        it("Should allow owner of NFT to delist item", () => {});
+        it("Should allow owner of NFT to list an item they have purchased", () => {});
+    });
 });

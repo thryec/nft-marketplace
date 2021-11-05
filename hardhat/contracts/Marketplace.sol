@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-
 contract Marketplace is Ownable, ReentrancyGuard {
     // ------------------ Variable Declarations ---------------------- //
     using Counters for Counters.Counter;
@@ -57,9 +56,8 @@ contract Marketplace is Ownable, ReentrancyGuard {
         uint _tokenId,
         uint _quantity,
         uint price
-    ) public payable nonReentrant {
-        require(price > 0, "Price must be least 1 wei");
-        require(msg.value == price);
+    ) public nonReentrant {
+        require(price > 0, "Price of item must be least 1 wei");
 
         _itemIds.increment();
         uint itemId = _itemIds.current();
@@ -82,6 +80,11 @@ contract Marketplace is Ownable, ReentrancyGuard {
     function delistItem(uint _itemId) public {
         require(msg.sender == itemsMapping[_itemId].owner);
         itemsMapping[_itemId].isListed = false;
+    }
+
+    function relistItem(uint _itemId) public {
+        require(msg.sender == itemsMapping[_itemId].owner);
+        itemsMapping[_itemId].isListed = true;
     }
 
     function transferItemToAddress(
