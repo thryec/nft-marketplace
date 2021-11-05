@@ -1,8 +1,8 @@
 {
-    "printWidth": 120,
+    "printWidth": 180,
     "tabWidth": 4,
     "useTabs": false,
     "singleQuote": false,
     "bracketSpacing": false,
-    "explicitTypes": "always"
+    "explicitTypes": "never"
 }

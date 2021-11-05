@@ -4,18 +4,24 @@ pragma solidity ^0.8.3;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract Marketplace is ReentrancyGuard {
+
+contract Marketplace is Ownable, ReentrancyGuard {
+    // ------------------ Variable Declarations ---------------------- //
     using Counters for Counters.Counter;
     Counters.Counter private _itemIds;
 
-    address payable owner;
+    address payable marketplaceOwner;
+    mapping(uint => Item) private itemsMapping;
 
+    /// Sets the owner of the Marketplace contract as the contract deployer
     constructor() {
-        owner = payable(msg.sender);
+        marketplaceOwner = payable(msg.sender);
     }
 
+    /// Initialize a struct to contain the information required for items listed on the Marketplace
     struct Item {
         address nftContract;
         uint tokenId;
@@ -28,6 +34,8 @@ contract Marketplace is ReentrancyGuard {
         bool isListed;
         bool isSold;
     }
+
+    // ------------------ Events ---------------------- //
 
     event ItemListed(
         address indexed nftContract,
@@ -42,11 +50,7 @@ contract Marketplace is ReentrancyGuard {
         bool isSold
     );
 
-    mapping(uint => Item) private itemIdToItem;
-
-    function getTokenPrice(uint _tokenId) public view returns (uint price) {
-        return itemIdToItem[_tokenId].price;
-    }
+    // ------------------ Mutative Functions ---------------------- //
 
     function listItemForSale(
         address nftContract,
@@ -59,32 +63,8 @@ contract Marketplace is ReentrancyGuard {
 
         _itemIds.increment();
         uint itemId = _itemIds.current();
-
-        itemIdToItem[itemId] = Item(
-            nftContract,
-            _tokenId,
-            itemId,
-            _quantity,
-            msg.sender,
-            payable(msg.sender),
-            payable(address(0)),
-            price,
-            false,
-            true
-        );
-
-        emit ItemListed(
-            nftContract,
-            _tokenId,
-            itemId,
-            _quantity,
-            msg.sender,
-            msg.sender,
-            address(0),
-            price,
-            true,
-            false
-        );
+        itemsMapping[itemId] = Item(nftContract, _tokenId, itemId, _quantity, msg.sender, payable(msg.sender), payable(address(0)), price, false, true);
+        emit ItemListed(nftContract, _tokenId, itemId, _quantity, msg.sender, msg.sender, address(0), price, true, false);
     }
 
     function purchaseItem(
@@ -92,14 +72,31 @@ contract Marketplace is ReentrancyGuard {
         uint _itemId,
         uint _quantity
     ) public payable nonReentrant {
-        uint price = itemIdToItem[_itemId].price;
-        uint _tokenId = itemIdToItem[_itemId].tokenId;
-        require(
-            msg.value == price * _quantity,
-            "Please submit the correct amount of coins for desired quantity and price."
-        );
+        uint price = itemsMapping[_itemId].price;
+        uint _tokenId = itemsMapping[_itemId].tokenId;
+        require(msg.value == price * _quantity, "Please submit the correct amount of coins for desired quantity and price.");
 
         IERC1155(nftContract).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, "0x00");
+    }
+
+    function delistItem(uint _itemId) public {
+        require(msg.sender == itemsMapping[_itemId].owner);
+        itemsMapping[_itemId].isListed = false;
+    }
+
+    function transferItemToAddress(
+        address nftContract,
+        address receiver,
+        uint _tokenId,
+        uint _quantity
+    ) public {
+        IERC1155(nftContract).safeTransferFrom(msg.sender, receiver, _tokenId, _quantity, "0x00");
+    }
+
+    // ------------------ Read Functions ---------------------- //
+
+    function getTokenPrice(uint _tokenId) public view returns (uint price) {
+        return itemsMapping[_tokenId].price;
     }
 
     function getListedItems() public view returns (Item[] memory) {
@@ -107,16 +104,16 @@ contract Marketplace is ReentrancyGuard {
         uint itemsListedCount = 0;
 
         for (uint i = 0; i < totalItemCount; i++) {
-            if (itemIdToItem[i + 1].isListed == true) {
+            if (itemsMapping[i + 1].isListed == true) {
                 itemsListedCount++;
             }
         }
 
         Item[] memory listedItems = new Item[](itemsListedCount);
         for (uint i = 0; i < totalItemCount; i++) {
-            if (itemIdToItem[i + 1].isListed == true) {
-                uint thisItemId = itemIdToItem[i + 1].itemId;
-                Item storage thisItem = itemIdToItem[thisItemId];
+            if (itemsMapping[i + 1].isListed == true) {
+                uint thisItemId = itemsMapping[i + 1].itemId;
+                Item storage thisItem = itemsMapping[thisItemId];
                 listedItems[i] = thisItem;
             }
         }
@@ -128,16 +125,16 @@ contract Marketplace is ReentrancyGuard {
         uint myItemsCount = 0;
 
         for (uint i = 0; i < totalItemCount; i++) {
-            if (itemIdToItem[i + 1].owner == msg.sender) {
+            if (itemsMapping[i + 1].owner == msg.sender) {
                 myItemsCount++;
             }
         }
 
         Item[] memory ownedItems = new Item[](myItemsCount);
         for (uint i = 0; i < totalItemCount; i++) {
-            if (itemIdToItem[i + 1].owner == msg.sender) {
-                uint thisItemId = itemIdToItem[i + 1].itemId;
-                Item storage thisItem = itemIdToItem[thisItemId];
+            if (itemsMapping[i + 1].owner == msg.sender) {
+                uint thisItemId = itemsMapping[i + 1].itemId;
+                Item storage thisItem = itemsMapping[thisItemId];
                 ownedItems[i] = thisItem;
             }
         }
@@ -149,33 +146,19 @@ contract Marketplace is ReentrancyGuard {
         uint creationCount = 0;
 
         for (uint i = 0; i < totalItemCount; i++) {
-            if (itemIdToItem[i + 1].creator == msg.sender) {
+            if (itemsMapping[i + 1].creator == msg.sender) {
                 creationCount++;
             }
         }
 
         Item[] memory createdItems = new Item[](creationCount);
         for (uint i = 0; i < totalItemCount; i++) {
-            if (itemIdToItem[i + 1].creator == msg.sender) {
-                uint thisItemId = itemIdToItem[i + 1].itemId;
-                Item storage thisItem = itemIdToItem[thisItemId];
+            if (itemsMapping[i + 1].creator == msg.sender) {
+                uint thisItemId = itemsMapping[i + 1].itemId;
+                Item storage thisItem = itemsMapping[thisItemId];
                 createdItems[i] = thisItem;
             }
         }
         return createdItems;
-    }
-
-    function delistItem(uint _itemId) public {
-        require(msg.sender == itemIdToItem[_itemId].owner);
-        itemIdToItem[_itemId].isListed = false;
-    }
-
-    function transferItemToAddress(
-        address nftContract,
-        address receiver,
-        uint _tokenId,
-        uint _quantity
-    ) public {
-        IERC1155(nftContract).safeTransferFrom(msg.sender, receiver, _tokenId, _quantity, "0x00");
     }
 }
