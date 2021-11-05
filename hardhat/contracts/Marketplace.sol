@@ -18,51 +18,54 @@ contract Marketplace is ReentrancyGuard {
 
     struct Item {
         address nftContract;
-        uint256 tokenId;
-        uint256 itemId;
-        uint256 quantity;
+        uint tokenId;
+        uint itemId;
+        uint quantity;
+        address creator;
         address payable seller;
         address payable owner;
-        uint256 price;
+        uint price;
         bool isListed;
         bool isSold;
     }
 
-    event ItemStatusChange(
+    event ItemListed(
         address indexed nftContract,
-        uint256 indexed tokenId,
-        uint256 indexed itemId,
-        uint256 quantity,
+        uint indexed tokenId,
+        uint indexed itemId,
+        uint quantity,
+        address creator,
         address seller,
         address owner,
-        uint256 price,
+        uint price,
         bool isListed,
         bool isSold
     );
 
-    mapping(uint256 => Item) private itemIdToItem;
+    mapping(uint => Item) private itemIdToItem;
 
-    function getTokenPrice(uint256 _tokenId) public view returns (uint256 price) {
+    function getTokenPrice(uint _tokenId) public view returns (uint price) {
         return itemIdToItem[_tokenId].price;
     }
 
     function listItemForSale(
         address nftContract,
-        uint256 _tokenId,
-        uint256 _quantity,
-        uint256 price
+        uint _tokenId,
+        uint _quantity,
+        uint price
     ) public payable nonReentrant {
         require(price > 0, "Price must be least 1 wei");
         require(msg.value == price);
 
         _itemIds.increment();
-        uint256 itemId = _itemIds.current();
+        uint itemId = _itemIds.current();
 
         itemIdToItem[itemId] = Item(
             nftContract,
             _tokenId,
             itemId,
             _quantity,
+            msg.sender,
             payable(msg.sender),
             payable(address(0)),
             price,
@@ -70,30 +73,109 @@ contract Marketplace is ReentrancyGuard {
             true
         );
 
-        emit ItemStatusChange(nftContract, _tokenId, itemId, _quantity, address(0), msg.sender, price, true, false);
+        emit ItemListed(
+            nftContract,
+            _tokenId,
+            itemId,
+            _quantity,
+            msg.sender,
+            msg.sender,
+            address(0),
+            price,
+            true,
+            false
+        );
     }
 
     function purchaseItem(
         address nftContract,
-        uint256 _itemId,
-        uint256 _quantity
+        uint _itemId,
+        uint _quantity
     ) public payable nonReentrant {
         uint price = itemIdToItem[_itemId].price;
-        uint tokenId = itemIdToItem[_itemId].tokenId;
+        uint _tokenId = itemIdToItem[_itemId].tokenId;
         require(
             msg.value == price * _quantity,
             "Please submit the correct amount of coins for desired quantity and price."
         );
 
-        IERC1155(nftContract).safeTransferFrom(address(this), msg.sender, tokenId, _quantity, "0x00");
-
-        emit ItemStatusChange(nftContract, tokenId, _itemId, _quantity, address(this), msg.sender, price, true, true);
+        IERC1155(nftContract).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, "0x00");
     }
 
-    function getListedItems() public view returns (Item[] memory) {}
+    function getListedItems() public view returns (Item[] memory) {
+        uint totalItemCount = _itemIds.current();
+        uint itemsListedCount = 0;
 
-    function getItemsOwned() public view returns (Item[] memory) {}
+        for (uint i = 0; i < totalItemCount; i++) {
+            if (itemIdToItem[i + 1].isListed == true) {
+                itemsListedCount++;
+            }
+        }
 
-    function getItemsSold() public view returns (Item[] memory) {}
+        Item[] memory listedItems = new Item[](itemsListedCount);
+        for (uint i = 0; i < totalItemCount; i++) {
+            if (itemIdToItem[i + 1].isListed == true) {
+                uint thisItemId = itemIdToItem[i + 1].itemId;
+                Item storage thisItem = itemIdToItem[thisItemId];
+                listedItems[i] = thisItem;
+            }
+        }
+        return listedItems;
+    }
 
+    function getItemsOwned() public view returns (Item[] memory) {
+        uint totalItemCount = _itemIds.current();
+        uint myItemsCount = 0;
+
+        for (uint i = 0; i < totalItemCount; i++) {
+            if (itemIdToItem[i + 1].owner == msg.sender) {
+                myItemsCount++;
+            }
+        }
+
+        Item[] memory ownedItems = new Item[](myItemsCount);
+        for (uint i = 0; i < totalItemCount; i++) {
+            if (itemIdToItem[i + 1].owner == msg.sender) {
+                uint thisItemId = itemIdToItem[i + 1].itemId;
+                Item storage thisItem = itemIdToItem[thisItemId];
+                ownedItems[i] = thisItem;
+            }
+        }
+        return ownedItems;
+    }
+
+    function getItemsCreated() public view returns (Item[] memory) {
+        uint totalItemCount = _itemIds.current();
+        uint creationCount = 0;
+
+        for (uint i = 0; i < totalItemCount; i++) {
+            if (itemIdToItem[i + 1].creator == msg.sender) {
+                creationCount++;
+            }
+        }
+
+        Item[] memory createdItems = new Item[](creationCount);
+        for (uint i = 0; i < totalItemCount; i++) {
+            if (itemIdToItem[i + 1].creator == msg.sender) {
+                uint thisItemId = itemIdToItem[i + 1].itemId;
+                Item storage thisItem = itemIdToItem[thisItemId];
+                createdItems[i] = thisItem;
+            }
+        }
+        return createdItems;
+    }
+
+    function delistItem(uint _itemId) public {
+        require(msg.sender == itemIdToItem[_itemId].owner);
+        itemIdToItem[_itemId].isListed = false;
+    }
+
+    function transferItemToAddress(
+        address nftContract,
+        address receiver,
+        uint _tokenId,
+        uint _quantity
+    ) public {
+        IERC1155(nftContract).safeTransferFrom(msg.sender, receiver, _tokenId, _quantity, "0x00");
+    }
 }
