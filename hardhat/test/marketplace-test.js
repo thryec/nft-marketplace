@@ -89,22 +89,18 @@ describe('NFT Marketplace', function () {
 
             const nftWallet = await provider.getBalance(nftAddress)
             const nftContractBalance = nftWallet.toString()
-            // console.log('sellerWallet: ', sellerBalance, 'marketplace wallet: ', marketBalance, 'nftContract wallet: ', nftContractBalance)
 
-            // const token0 = await nft.balanceOf(seller1.address, 0)
-            // const token1 = await nft.balanceOf(seller2.address, 1)
-            // console.log('token0 count: ', token0, 'token1 count: ', token1)
             await marketplace.listItemForSale(nftAddress, 0, 1, listPrice)
 
-            // const item = await marketplace.getItemById(0)
-            // expect(await item.isListed).to.equal(true)
-            // expect(await item.isSold).to.equal(false)
+            const item = await marketplace.getItemById(1)
+            expect(await item.isListed).to.equal(true)
+            expect(await item.isSold).to.equal(false)
             // console.log('Listed Items: ', item)
         })
 
         it('Should throw an error if listPrice < 0', async () => {
-            // const listAttempt = await marketplace.listItemForSale(nftAddress, 0, 2, listPrice, { value: listPrice })
-            // expect(listAttempt).to.throw('Price of item must be least 1 wei')
+            const listAttempt = await marketplace.listItemForSale(nftAddress, 0, 2, listPrice)
+            expect(listAttempt).to.throw('Price of item must be least 1 wei')
         })
 
         it('Should transfer NFT to buyer when purchase is made', async () => {

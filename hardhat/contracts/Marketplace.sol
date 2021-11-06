@@ -2,12 +2,13 @@
 pragma solidity ^0.8.3;
 
 import '@openzeppelin/contracts/token/ERC1155/ERC1155.sol';
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import 'hardhat/console.sol';
 
-contract Marketplace is Ownable, ReentrancyGuard {
+contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     // ------------------ Variable Declarations ---------------------- //
     using Counters for Counters.Counter;
     Counters.Counter private _itemIds;
@@ -72,8 +73,8 @@ contract Marketplace is Ownable, ReentrancyGuard {
             payable(msg.sender),
             payable(address(0)),
             price,
-            false,
-            true
+            true,
+            false 
         );
         console.log('listItemForSale msg.sender: ', msg.sender); 
         IERC1155(nftContract).safeTransferFrom(msg.sender, address(this), _tokenId, _quantity, '0x00');
