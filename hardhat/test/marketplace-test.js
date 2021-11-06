@@ -46,22 +46,22 @@ describe('NFT Marketplace', function () {
 
     describe('Minting Tokens', async () => {
         beforeEach(async () => {
-            await nft.mintToken(seller1.address, 0, 5, '0x00')
-            await nft.mintToken(seller2.address, 1, 10, '0x00')
+            await nft.mintToken(contractOwner.address, 0, 5, '0x00')
+            await nft.mintToken(contractOwner.address, 1, 10, '0x00')
         })
 
         it('Should mint the correct quantity of NFTs', async () => {
-            const noOfToken0 = await nft.balanceOf(seller1.address, 0)
-            const noOfToken1 = await nft.balanceOf(seller2.address, 1)
-            expect(await noOfToken0).to.equal(5)
-            expect(await noOfToken1).to.equal(10)
+            const numOfToken0 = await nft.balanceOf(contractOwner.address, 0)
+            const numOfToken1 = await nft.balanceOf(contractOwner.address, 1)
+            expect(await numOfToken0).to.equal(5)
+            expect(await numOfToken1).to.equal(10)
             // console.log("token count: ", noOfToken0, noOfToken1);
         })
 
         it('Should successfully set the tokenURI of the NFT', async () => {
-            await nft.connect(seller1).setTokenURI(0, 'https://cdn.mos.cms.futurecdn.net/2NBcYamXxLpvA77ciPfKZW-1200-80.jpg')
+            await nft.connect(contractOwner).setTokenURI(0, 'https://cdn.mos.cms.futurecdn.net/2NBcYamXxLpvA77ciPfKZW-1200-80.jpg')
             await nft
-                .connect(seller2)
+                .connect(contractOwner)
                 .setTokenURI(1, 'https://www.dccomics.com/sites/default/files/Marquee_DSM_CH_098_558a03cfde9174.78898221.jpg')
             const token0URI = await nft.getTokenURI(0)
             const token1URI = await nft.getTokenURI(1)
@@ -75,25 +75,30 @@ describe('NFT Marketplace', function () {
         const listPrice = ethers.utils.parseUnits('10', 'ether')
 
         beforeEach(async () => {
-            await nft.mintToken(seller1.address, 0, 5, '0x00')
-            await nft.mintToken(seller2.address, 1, 10, '0x00')
+            await nft.mintToken(contractOwner.address, 0, 5, '0x00')
+            await nft.mintToken(contractOwner.address, 1, 10, '0x00')
             await nft.setApprovalForAll(marketplaceAddress, true)
         })
 
         it('Should successfully list an item for sale', async () => {
             const sellerWallet = await provider.getBalance(seller1.address)
             const sellerBalance = sellerWallet.toString()
-            console.log('sellerWallet: ', sellerBalance)
 
             const marketplaceWallet = await provider.getBalance(marketplaceAddress)
             const marketBalance = marketplaceWallet.toString()
-            console.log('marketplace wallet', marketBalance)
-            // await marketplace.listItemForSale(nftAddress, 0, 2, listPrice, { value: listPrice })
-            // const item = await marketplace.getItemById(0)
 
+            const nftWallet = await provider.getBalance(nftAddress)
+            const nftContractBalance = nftWallet.toString()
+            // console.log('sellerWallet: ', sellerBalance, 'marketplace wallet: ', marketBalance, 'nftContract wallet: ', nftContractBalance)
+
+            // const token0 = await nft.balanceOf(seller1.address, 0)
+            // const token1 = await nft.balanceOf(seller2.address, 1)
+            // console.log('token0 count: ', token0, 'token1 count: ', token1)
+            await marketplace.listItemForSale(nftAddress, 0, 1, listPrice)
+
+            // const item = await marketplace.getItemById(0)
             // expect(await item.isListed).to.equal(true)
             // expect(await item.isSold).to.equal(false)
-
             // console.log('Listed Items: ', item)
         })
 
