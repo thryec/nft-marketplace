@@ -12,6 +12,7 @@ contract Marketplace is Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
     Counters.Counter private _itemIds;
 
+    uint listingCost = 0.025 ether; 
     address payable marketplaceOwner;
     mapping(uint => Item) private itemsMapping;
 
@@ -56,7 +57,7 @@ contract Marketplace is Ownable, ReentrancyGuard {
         uint _tokenId,
         uint _quantity,
         uint price
-    ) public nonReentrant {
+    ) public payable nonReentrant {
         require(price > 0, "Price of item must be least 1 wei");
 
         _itemIds.increment();
@@ -100,6 +101,10 @@ contract Marketplace is Ownable, ReentrancyGuard {
     }
 
     // ------------------ Read Functions ---------------------- //
+
+    function getListingCost() public view returns (uint) {
+        return listingCost; 
+    } 
 
     function getTokenPrice(uint _tokenId) public view returns (uint price) {
         return itemsMapping[_tokenId].price;
