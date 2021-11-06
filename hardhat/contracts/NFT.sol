@@ -9,13 +9,13 @@ import "hardhat/console.sol";
 contract NFT is ERC1155, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
-    address nftContractAddress;
+    address marketplaceAddress;
 
     // to store unique URIs for each nft
     mapping(uint => string) private _uris;
 
     constructor(address marketAddress) ERC1155("VastOcean") {
-        nftContractAddress = marketAddress;
+        marketplaceAddress = marketAddress;
     }
 
     // ------------------ Mutative Functions ---------------------- //
@@ -25,12 +25,13 @@ contract NFT is ERC1155, Ownable {
         uint tokenId,
         uint amount,
         bytes memory data
-    ) public {
+    ) public returns (uint _tokenId) {
         _mint(account, tokenId, amount, data);
+        return _tokenId; 
     }
 
     // add URIs for our unique tokens into the mapping
-    function setTokenURI(uint _tokenId, string memory newURI) public onlyOwner {
+    function setTokenURI(uint _tokenId, string memory newURI) public {
         bool owner = checkIfOwner(msg.sender, _tokenId);
         require(owner == true);
         require(bytes(_uris[_tokenId]).length == 0, "Cannot set URI twice.");
@@ -41,14 +42,18 @@ contract NFT is ERC1155, Ownable {
         address from,
         uint _tokenId,
         uint amount
-    ) public { 
-        _burn(from, _tokenId, amount); 
+    ) public {
+        _burn(from, _tokenId, amount);
     }
 
     // ------------------ Read Functions ---------------------- //
 
     function getTokenURI(uint _tokenId) public view returns (string memory) {
         return (_uris[_tokenId]);
+    }
+
+    function getMarketAddress() public view returns (address marketAddress) {
+        return marketplaceAddress;
     }
 
     function checkIfOwner(address caller, uint _tokenId) public view returns (bool) {
