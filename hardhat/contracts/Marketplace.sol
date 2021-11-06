@@ -62,10 +62,13 @@ contract Marketplace is Ownable, ReentrancyGuard {
         _itemIds.increment();
         uint itemId = _itemIds.current();
         itemsMapping[itemId] = Item(nftContract, _tokenId, itemId, _quantity, msg.sender, payable(msg.sender), payable(address(0)), price, false, true);
+
+        IERC1155(nftContract).safeTransferFrom(msg.sender, address(this), _tokenId, _quantity, "0x00"); 
+
         emit ItemListed(nftContract, _tokenId, itemId, _quantity, msg.sender, msg.sender, address(0), price, true, false);
     }
 
-    function purchaseItem(
+    function purchaseItems(
         address nftContract,
         uint _itemId,
         uint _quantity
@@ -100,6 +103,10 @@ contract Marketplace is Ownable, ReentrancyGuard {
 
     function getTokenPrice(uint _tokenId) public view returns (uint price) {
         return itemsMapping[_tokenId].price;
+    }
+
+    function getItemById(uint _tokenId) public view returns (Item memory) {
+        return itemsMapping[_tokenId]; 
     }
 
     function getListedItems() public view returns (Item[] memory) {
