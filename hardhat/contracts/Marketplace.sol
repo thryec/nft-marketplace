@@ -13,7 +13,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
     Counters.Counter private _itemIds;
 
-    uint listingCost = 0.025 ether;
+    uint listingCost = 0.01 ether;
     address payable marketplaceOwner;
     mapping(uint => Item) private itemsMapping;
 
@@ -92,6 +92,9 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         require(msg.value == price, 'Please submit the correct amount of coins for desired quantity and price.');
 
         IERC1155(nftContract).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, '0x00');
+        itemsMapping[_itemId].sold = true; 
+        itemsMapping[_itemId].owner = payable(msg.sender); 
+        payable(marketplaceOwner).transfer(listingPrice); 
     }
 
     function delistItem(uint _itemId) public {
