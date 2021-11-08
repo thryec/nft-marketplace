@@ -112,17 +112,17 @@ describe('NFT Marketplace', function () {
         it('Should transfer cost of NFT to seller when purchase is made', async () => {
             const originalOwnerBalance = await provider.getBalance(contractOwner.address)
             const originalBuyerBalance = await provider.getBalance(buyer1.address)
-            console.log('originalOwnerBalance', originalOwnerBalance.toString(), 'originalBuyerBalance', originalBuyerBalance.toString())
+            // console.log('originalOwnerBalance', originalOwnerBalance.toString(), 'originalBuyerBalance', originalBuyerBalance.toString())
             await marketplace.listItemForSale(nftAddress, 0, 1, listPrice)
             await marketplace.listItemForSale(nftAddress, 1, 1, listPrice)
             await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 1, { value: listPrice })
             await marketplace.connect(buyer1).purchaseItems(nftAddress, 2, 1, { value: listPrice })
             const newOwnerBalance = await provider.getBalance(contractOwner.address)
             const newBuyerBalance = await provider.getBalance(buyer1.address)
-            console.log('newOwnerBalance', newOwnerBalance.toString(), 'newBuyerBalance', newBuyerBalance.toString())
+            // console.log('newOwnerBalance', newOwnerBalance.toString(), 'newBuyerBalance', newBuyerBalance.toString())
 
             const priceInWei = ethers.utils.parseUnits('4', 'ether')
-            console.log('price in Wei: ', priceInWei.toString())
+            // console.log('price in Wei: ', priceInWei.toString())
             expect(newOwnerBalance - originalOwnerBalance > priceInWei).to.be.true
             expect(originalBuyerBalance - newBuyerBalance > priceInWei).to.be.true
         })
@@ -138,15 +138,21 @@ describe('NFT Marketplace', function () {
         })
 
         it('Should allow owner of NFT to delist item', async () => {
-            // let listedItems = await marketplace.getListedItems()
-            // console.log('original listedItems: ', listedItems)
-            // await marketplace.delistItem(1)
-            // console.log('items delisted')
-            // listedItems = await marketplace.getListedItems()
-            // console.log('newListedItems: ', listedItems)
+            const originalListedItems = await marketplace.getListedItems()
+            await marketplace.delistItem(1)
+            const newListedItems = await marketplace.getListedItems()
+            expect(originalListedItems.length - newListedItems.length).to.equal(1)
         })
 
-        it('Should allow owner of NFT to list an item they have purchased', async () => {})
+        it('Should allow owner of NFT to list an item they have purchased', async () => {
+            await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 1, { value: listPrice })
+            const originalListedItems = await marketplace.getListedItems()
+            console.log('originalListedItems: ', originalListedItems)
+            await marketplace.connect(buyer1).relistItem(1)
+            const newListedItems = await marketplace.getListedItems()
+            console.log('newListedItems: ', newListedItems)
+            expect(newListedItems.length - originalListedItems.length).to.equal(1)
+        })
     })
 
     describe('Retrieving Items', async () => {

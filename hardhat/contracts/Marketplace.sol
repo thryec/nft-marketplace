@@ -2,7 +2,7 @@
 pragma solidity ^0.8.3;
 
 import '@openzeppelin/contracts/token/ERC1155/ERC1155.sol';
-import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
+import '@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
@@ -71,10 +71,10 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
             _quantity,
             msg.sender,
             payable(msg.sender),
-            payable(address(0)),
+            payable(msg.sender),
             price,
             true,
-            false 
+            false
         );
 
         IERC1155(nftContract).safeTransferFrom(msg.sender, address(this), _tokenId, _quantity, '0x00');
@@ -89,19 +89,20 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     ) public payable nonReentrant {
         uint price = itemsMapping[_itemId].price;
         uint _tokenId = itemsMapping[_itemId].tokenId;
-        // console.log('msg.value: ', msg.value, 'price: ', price); 
+        // console.log('msg.value: ', msg.value, 'price: ', price);
         require(msg.value == price, 'Please submit the correct amount of coins for desired quantity and price.');
 
         IERC1155(nftContract).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, '0x00');
-        itemsMapping[_itemId].isSold = true; 
-        itemsMapping[_itemId].owner = payable(msg.sender); 
-        payable(marketplaceOwner).transfer(msg.value); 
+        itemsMapping[_itemId].isSold = true;
+        itemsMapping[_itemId].isListed = false;
+        itemsMapping[_itemId].owner = payable(msg.sender);
+        payable(marketplaceOwner).transfer(msg.value);
     }
 
     function delistItem(uint _itemId) public {
-        // address itemOwner = itemsMapping[_itemId].owner; 
-        // console.log('msg.sender: ', msg.sender, 'owner: ', owner); 
-        require(msg.sender == itemsMapping[_itemId].owner, 'msg sender is not owner of item');
+        address itemOwner = itemsMapping[_itemId].owner;
+        // console.log('msg.sender: ', msg.sender, 'owner: ', itemOwner);
+        require(msg.sender == itemOwner, 'msg sender is not owner of item');
         itemsMapping[_itemId].isListed = false;
     }
 
@@ -136,6 +137,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     function getListedItems() public view returns (Item[] memory) {
         uint totalItemCount = _itemIds.current();
         uint itemsListedCount = 0;
+        uint resultItemId = 0; 
 
         for (uint i = 0; i < totalItemCount; i++) {
             if (itemsMapping[i + 1].isListed == true) {
@@ -148,7 +150,8 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
             if (itemsMapping[i + 1].isListed == true) {
                 uint thisItemId = itemsMapping[i + 1].itemId;
                 Item storage thisItem = itemsMapping[thisItemId];
-                listedItems[i] = thisItem;
+                listedItems[resultItemId] = thisItem;
+                resultItemId++; 
             }
         }
         return listedItems;
