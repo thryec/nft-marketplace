@@ -77,15 +77,28 @@ describe('NFT Marketplace', function () {
         beforeEach(async () => {
             await nft.mintToken(contractOwner.address, 0, 5, '0x00')
             await nft.mintToken(contractOwner.address, 1, 10, '0x00')
+            await nft.mintToken(seller1.address, 2, 15, '0x00')
+            await nft.mintToken(seller2.address, 3, 20, '0x00')
             await nft.setApprovalForAll(marketplaceAddress, true)
+            await nft.connect(seller1).setApprovalForAll(marketplaceAddress, true)
+            await nft.connect(seller2).setApprovalForAll(marketplaceAddress, true)
         })
 
-        it('Should successfully list an item for sale', async () => {
+        it('Should successfully list items for sale', async () => {
             await marketplace.listItemForSale(nftAddress, 0, 1, listPrice)
+            await marketplace.connect(seller1).listItemForSale(nftAddress, 2, 2, listPrice)
+            await marketplace.connect(seller2).listItemForSale(nftAddress, 3, 2, listPrice)
 
-            const item = await marketplace.getItemById(1)
-            expect(await item.isListed).to.equal(true)
-            expect(await item.isSold).to.equal(false)
+            const ownersItem = await marketplace.getItemById(1)
+            const seller1Item = await marketplace.getItemById(2)
+            const seller2Item = await marketplace.getItemById(3)
+
+            expect(await ownersItem.isListed).to.be.true
+            expect(await ownersItem.isSold).to.be.false
+            expect(await seller1Item.isListed).to.be.true
+            expect(await seller1Item.isSold).to.be.false
+            expect(await seller2Item.isListed).to.be.true
+            expect(await seller2Item.isSold).to.be.false
         })
 
         it('Should throw an error if listPrice < 0', async () => {
@@ -147,10 +160,10 @@ describe('NFT Marketplace', function () {
         it('Should allow owner of NFT to list an item they have purchased', async () => {
             await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 1, { value: listPrice })
             const originalListedItems = await marketplace.getListedItems()
-            console.log('originalListedItems: ', originalListedItems)
+            // console.log('originalListedItems: ', originalListedItems)
             await marketplace.connect(buyer1).relistItem(1)
             const newListedItems = await marketplace.getListedItems()
-            console.log('newListedItems: ', newListedItems)
+            // console.log('newListedItems: ', newListedItems)
             expect(newListedItems.length - originalListedItems.length).to.equal(1)
         })
     })
