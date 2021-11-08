@@ -89,14 +89,12 @@ describe('NFT Marketplace', function () {
         })
 
         it('Should throw an error if listPrice < 0', async () => {
-            try {
-                await marketplace.listItemForSale(nftAddress, 0, 2, 0)
-            } catch (err) {
-                expect(err).to.throw('Item price must be greater than zero')
-            }
+            await expect(marketplace.listItemForSale(nftAddress, 0, 2, 0)).to.be.revertedWith('Item price must be greater than zero')
         })
 
         it('Should transfer NFT to buyer when purchase is made', async () => {
+            await marketplace.listItemForSale(nftAddress, 0, 1, listPrice)
+            await marketplace.listItemForSale(nftAddress, 1, 1, listPrice)
             await marketplace.connect(buyer1).purchaseItems(nftAddress, 0, 1, { value: listPrice })
             await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 1, { value: listPrice })
 
@@ -135,9 +133,16 @@ describe('NFT Marketplace', function () {
             await marketplace.listItemForSale(nftAddress, 1, 1, listPrice)
         })
 
-        it('Should allow owner of NFT to delist item', () => {})
+        it('Should allow owner of NFT to delist item', async () => {
+            // let listedItems = await marketplace.getListedItems()
+            // console.log('original listedItems: ', listedItems)
+            // await marketplace.delistItem(1)
+            // console.log('items delisted')
+            // listedItems = await marketplace.getListedItems()
+            // console.log('newListedItems: ', listedItems)
+        })
 
-        it('Should allow owner of NFT to list an item they have purchased', () => {})
+        it('Should allow owner of NFT to list an item they have purchased', async () => {})
     })
 
     describe('Retrieving Items', async () => {

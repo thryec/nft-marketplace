@@ -89,21 +89,24 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     ) public payable nonReentrant {
         uint price = itemsMapping[_itemId].price;
         uint _tokenId = itemsMapping[_itemId].tokenId;
+        console.log('msg.value: ', msg.value, 'price: ', price); 
         require(msg.value == price, 'Please submit the correct amount of coins for desired quantity and price.');
 
         IERC1155(nftContract).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, '0x00');
-        itemsMapping[_itemId].sold = true; 
+        itemsMapping[_itemId].isSold = true; 
         itemsMapping[_itemId].owner = payable(msg.sender); 
-        payable(marketplaceOwner).transfer(listingPrice); 
+        payable(marketplaceOwner).transfer(msg.value); 
     }
 
     function delistItem(uint _itemId) public {
-        require(msg.sender == itemsMapping[_itemId].owner);
+        // address itemOwner = itemsMapping[_itemId].owner; 
+        // console.log('msg.sender: ', msg.sender, 'owner: ', owner); 
+        require(msg.sender == itemsMapping[_itemId].owner, 'msg sender is not owner of item');
         itemsMapping[_itemId].isListed = false;
     }
 
     function relistItem(uint _itemId) public {
-        require(msg.sender == itemsMapping[_itemId].owner);
+        require(msg.sender == itemsMapping[_itemId].owner, 'msg sender is not owner of item');
         itemsMapping[_itemId].isListed = true;
     }
 
