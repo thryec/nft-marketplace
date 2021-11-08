@@ -184,6 +184,7 @@ describe('NFT Marketplace', function () {
         })
 
         it('Should fetch the correct quantity of NFTs owned', async () => {
+            // branch test
             const originalSeller1Tokens = await marketplace.connect(seller1).getItemsOwned()
             console.log(
                 'originalSeller1Token0: ',
@@ -191,7 +192,7 @@ describe('NFT Marketplace', function () {
                 'originalSeller1Token1: ',
                 originalSeller1Tokens[1].quantityListed._hex
             )
-            await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 2, { value: listPrice })
+            await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 2it , { value: listPrice })
             await marketplace.connect(buyer2).purchaseItems(nftAddress, 2, 2, { value: listPrice })
             const newSeller1Tokens = await marketplace.connect(seller1).getItemsOwned()
             console.log('newSeller1Tokens: ', newSeller1Tokens)
