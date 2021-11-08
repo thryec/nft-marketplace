@@ -110,14 +110,21 @@ describe('NFT Marketplace', function () {
         })
 
         it('Should transfer cost of NFT to seller when purchase is made', async () => {
-            // const originalOwnerBalance = await provider.getBalance(contractOwner.address)
-            // const originalBuyerBalance = await provider.getBalance(buyer1.address)
-            // await marketplace.connect(buyer1).purchaseItems(nftAddress, 0, 1, { value: listPrice })
-            // await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 1, { value: listPrice })
-            // const newOwnerBalance = await provider.getBalance(contractOwner.address)
-            // const newBuyerBalance = await provider.getBalance(buyer1.address)
-            // expect(newOwnerBalance).to.equal(originalOwnerBalance + 20)
-            // expect(newBuyerBalance).to.equal(originalBuyerBalance - 20)
+            const originalOwnerBalance = await provider.getBalance(contractOwner.address)
+            const originalBuyerBalance = await provider.getBalance(buyer1.address)
+            console.log('originalOwnerBalance', originalOwnerBalance.toString(), 'originalBuyerBalance', originalBuyerBalance.toString())
+            await marketplace.listItemForSale(nftAddress, 0, 1, listPrice)
+            await marketplace.listItemForSale(nftAddress, 1, 1, listPrice)
+            await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 1, { value: listPrice })
+            await marketplace.connect(buyer1).purchaseItems(nftAddress, 2, 1, { value: listPrice })
+            const newOwnerBalance = await provider.getBalance(contractOwner.address)
+            const newBuyerBalance = await provider.getBalance(buyer1.address)
+            console.log('newOwnerBalance', newOwnerBalance.toString(), 'newBuyerBalance', newBuyerBalance.toString())
+
+            const priceInWei = ethers.utils.parseUnits('4', 'ether')
+            console.log('price in Wei: ', priceInWei.toString())
+            expect(newOwnerBalance - originalOwnerBalance > priceInWei).to.be.true
+            expect(originalBuyerBalance - newBuyerBalance > priceInWei).to.be.true
         })
     })
 
