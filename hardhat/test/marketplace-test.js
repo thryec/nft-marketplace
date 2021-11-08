@@ -135,7 +135,6 @@ describe('NFT Marketplace', function () {
             // console.log('newOwnerBalance', newOwnerBalance.toString(), 'newBuyerBalance', newBuyerBalance.toString())
 
             const priceInWei = ethers.utils.parseUnits('4', 'ether')
-            // console.log('price in Wei: ', priceInWei.toString())
             expect(newOwnerBalance - originalOwnerBalance > priceInWei).to.be.true
             expect(originalBuyerBalance - newBuyerBalance > priceInWei).to.be.true
         })
@@ -173,23 +172,33 @@ describe('NFT Marketplace', function () {
             await nft.mintToken(seller1.address, 0, 10, '0x00')
             await nft.mintToken(seller1.address, 1, 5, '0x00')
             await nft.connect(seller1).setApprovalForAll(marketplaceAddress, true)
-            await marketplace.connect(seller1).listItemForSale(nftAddress, 0, 5, listPrice)
-            await marketplace.connect(seller1).listItemForSale(nftAddress, 1, 2, listPrice)
+            await marketplace.connect(seller1).listItemForSale(nftAddress, 0, 8, listPrice)
+            await marketplace.connect(seller1).listItemForSale(nftAddress, 1, 4, listPrice)
         })
 
         it('Should fetch the correct quantity of NFTs created', async () => {
             const seller1Tokens = await marketplace.connect(seller1).getItemsCreated()
-            console.log('seller Tokens: ', seller1Tokens[0].quantity)
             expect(seller1Tokens.length).to.equal(2)
-            expect(seller1Tokens[0].quantity).to.equal(10)
-            // expect(seller1Tokens[1].quantity).to.equal(5)
+            expect(seller1Tokens[0].quantityListed).to.equal(8)
+            expect(seller1Tokens[1].quantityListed).to.equal(4)
         })
 
         it('Should fetch the correct quantity of NFTs owned', async () => {
+            const originalSeller1Tokens = await marketplace.connect(seller1).getItemsOwned()
+            console.log(
+                'originalSeller1Token0: ',
+                originalSeller1Tokens[0].quantityListed._hex,
+                'originalSeller1Token1: ',
+                originalSeller1Tokens[1].quantityListed._hex
+            )
             await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 2, { value: listPrice })
-            await marketplace.connect(buyer2).purchaseItems(nftAddress, 2, 1, { value: listPrice })
-            const seller1Tokens = await marketplace.connect(seller1).getItemsCreated()
-            // expect(seller1Tokens[0].length).to.equal(10)
+            await marketplace.connect(buyer2).purchaseItems(nftAddress, 2, 2, { value: listPrice })
+            const newSeller1Tokens = await marketplace.connect(seller1).getItemsOwned()
+            console.log('newSeller1Tokens: ', newSeller1Tokens)
+            const buyer1Owned = await marketplace.connect(buyer1).getItemsOwned()
+            const buyer2Owned = await marketplace.connect(buyer2).getItemsOwned()
+            console.log('buyer1Owned: ', buyer1Owned)
+            console.log('buyer2Owned: ', buyer2Owned)
         })
     })
 })

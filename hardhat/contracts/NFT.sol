@@ -30,7 +30,6 @@ contract NFT is ERC1155, Ownable {
         return _tokenId; 
     }
 
-    // add URIs for our unique tokens into the mapping
     function setTokenURI(uint _tokenId, string memory newURI) public {
         bool owner = checkIfOwner(msg.sender, _tokenId);
         require(owner == true);

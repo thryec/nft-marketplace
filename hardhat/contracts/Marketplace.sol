@@ -27,7 +27,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         address nftContract;
         uint tokenId;
         uint itemId;
-        uint quantity;
+        uint quantityListed;
         address creator;
         address payable seller;
         address payable owner;
@@ -42,7 +42,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         address indexed nftContract,
         uint indexed tokenId,
         uint indexed itemId,
-        uint quantity,
+        uint quantityListed,
         address creator,
         address seller,
         address owner,
@@ -93,9 +93,11 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         require(msg.value == price, 'Please submit the correct amount of coins for desired quantity and price.');
 
         IERC1155(nftContract).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, '0x00');
+        itemsMapping[_itemId].owner = payable(msg.sender);
+        itemsMapping[_itemId].quantityListed = itemsMapping[_itemId].quantityListed - _quantity; 
         itemsMapping[_itemId].isSold = true;
         itemsMapping[_itemId].isListed = false;
-        itemsMapping[_itemId].owner = payable(msg.sender);
+
         payable(marketplaceOwner).transfer(msg.value);
     }
 
@@ -137,7 +139,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     function getListedItems() public view returns (Item[] memory) {
         uint totalItemCount = _itemIds.current();
         uint itemsListedCount = 0;
-        uint resultItemId = 0; 
+        uint resultItemId = 0;
 
         for (uint i = 0; i < totalItemCount; i++) {
             if (itemsMapping[i + 1].isListed == true) {
@@ -151,7 +153,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
                 uint thisItemId = itemsMapping[i + 1].itemId;
                 Item storage thisItem = itemsMapping[thisItemId];
                 listedItems[resultItemId] = thisItem;
-                resultItemId++; 
+                resultItemId++;
             }
         }
         return listedItems;
@@ -160,6 +162,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     function getItemsOwned() public view returns (Item[] memory) {
         uint totalItemCount = _itemIds.current();
         uint myItemsCount = 0;
+        uint resultItemId = 0;
 
         for (uint i = 0; i < totalItemCount; i++) {
             if (itemsMapping[i + 1].owner == msg.sender) {
@@ -172,7 +175,8 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
             if (itemsMapping[i + 1].owner == msg.sender) {
                 uint thisItemId = itemsMapping[i + 1].itemId;
                 Item storage thisItem = itemsMapping[thisItemId];
-                ownedItems[i] = thisItem;
+                ownedItems[resultItemId] = thisItem;
+                resultItemId++;
             }
         }
         return ownedItems;
