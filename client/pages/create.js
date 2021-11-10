@@ -19,6 +19,7 @@ const Create = () => {
     quantity: '',
   })
   const [listedItems, setListedItems] = useState([])
+  const router = useRouter()
 
   const onFileUpload = async (e) => {
     const file = e.target.files[0]
