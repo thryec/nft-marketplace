@@ -3,7 +3,7 @@ import { ethers } from 'ethers'
 import { useRouter } from 'next/dist/client/router'
 import Web3Modal from 'web3modal'
 import { create } from 'ipfs-http-client'
-import { nftaddress, nftmarketaddress } from '../../config'
+import { nftaddress, marketplaceaddress } from '../../config'
 import NFT from '../../hardhat/artifacts/contracts/NFT.sol/NFT.json'
 import Market from '../../hardhat/artifacts/contracts/Marketplace.sol/Marketplace.json'
 
@@ -53,15 +53,27 @@ const Create = () => {
     const provider = new ethers.providers.Web3Provider(connection)
     const signer = provider.getSigner()
     const myAddress = await signer.getAddress()
-    // console.log('myAddress: ', myAddress)
-    // mint nft
+
     const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
+    console.log('starting mint.....')
     const mintTxn = await nftContract.mintToken(myAddress, tokenId, itemInfo.quantity.toString(), '0x00')
-    console.log('minting token...', mintTxn)
     const txn = await mintTxn.wait()
     console.log('txn: ', txn)
-    // set uri as url
-    // list on marketplace
+
+    console.log('setting tokenURI...')
+    await nftContract.setTokenURI(1, url)
+    console.log('fetching tokenURI...')
+    // const img = await nftContract.getTokenURI(tokenId)
+    // console.log('token URI: ', img)
+
+    const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
+    const price = ethers.utils.parseUnits(itemInfo.price, 'ether')
+    console.log('price: ', price)
+    const listTxn = marketplaceContract.listItemForSale(nftaddress, tokenId, 1, price)
+    await listTxn.wait()
+    console.log('listTxn: ', listTxn)
+
+    setFileUrl('')
   }
 
   return (
@@ -92,7 +104,6 @@ const Create = () => {
         <button
           onClick={() => {
             createSaleItem()
-            listOnMarketplace()
           }}
           style={inputFields}
         >
