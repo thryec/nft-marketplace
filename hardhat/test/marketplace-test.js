@@ -184,6 +184,7 @@ describe('NFT Marketplace', function () {
         })
 
         it('Should fetch the correct quantity of NFTs owned', async () => {
+            // Note: only works for one edition per token for now
             const originalSeller1Tokens = await marketplace.connect(seller1).getItemsOwned()
             console.log(
                 'originalSeller1Token0: ',
