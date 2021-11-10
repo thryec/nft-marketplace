@@ -18,6 +18,7 @@ const Create = () => {
     price: '',
     quantity: '',
   })
+  const [listedItems, setListedItems] = useState([])
 
   const onFileUpload = async (e) => {
     const file = e.target.files[0]
@@ -36,6 +37,8 @@ const Create = () => {
       alert('Please do not leave any fields blank.')
       return
     }
+    setListedItems([...listedItems, { tokenId: tokenId, url: fileUrl }])
+    setTokenId(tokenId + 1)
     const data = JSON.stringify({ name, description, image: fileUrl })
     try {
       const addedFile = await client.add(data)
@@ -61,19 +64,28 @@ const Create = () => {
     console.log('txn: ', txn)
 
     console.log('setting tokenURI...')
-    await nftContract.setTokenURI(1, url)
-    console.log('fetching tokenURI...')
-    // const img = await nftContract.getTokenURI(tokenId)
-    // console.log('token URI: ', img)
+    // await nftContract.setTokenURI(1, url)
 
     const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
     const price = ethers.utils.parseUnits(itemInfo.price, 'ether')
     console.log('price: ', price)
-    const listTxn = marketplaceContract.listItemForSale(nftaddress, tokenId, 1, price)
+    const listTxn = await marketplaceContract.listItemForSale(nftaddress, tokenId, 1, price)
     await listTxn.wait()
     console.log('listTxn: ', listTxn)
 
     setFileUrl('')
+  }
+
+  const fetchTokenURI = async () => {
+    const web3Modal = new Web3Modal()
+    const connection = await web3Modal.connect()
+    const provider = new ethers.providers.Web3Provider(connection)
+    const signer = provider.getSigner()
+    const myAddress = await signer.getAddress()
+
+    const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
+    const img = await nftContract.getTokenURI(0)
+    console.log('token URI: ', img)
   }
 
   return (
@@ -109,6 +121,11 @@ const Create = () => {
         >
           List Item
         </button>
+        <div>
+          <button onClick={fetchTokenURI}>Fetch Token URI</button>
+          {/* {JSON.stringify(listedItems)} */}
+        </div>
+        <hr />
         {fileUrl && <img src={fileUrl} width="800px" />}
       </div>
     </div>
