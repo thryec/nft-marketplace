@@ -12,8 +12,12 @@ function MyApp({ Component, pageProps }) {
           <Link href="/create">
             <a style={linkStyle}>🎨 Create</a>
           </Link>
+          <Link href="/gallery">
+            <a style={linkStyle}>🖼️ Gallery</a>
+          </Link>
         </div>
       </nav>
+      <hr />
       <div>
         <Component {...pageProps} />
       </div>
