@@ -11,6 +11,7 @@ const client = create('https://ipfs.infura.io:5001/api/v0')
 
 const Create = () => {
   const [fileUrl, setFileUrl] = useState('')
+  const [tokenId, setTokenId] = useState(0)
   const [itemInfo, setItemInfo] = useState({
     name: '',
     description: '',
@@ -51,8 +52,12 @@ const Create = () => {
     const connection = await web3Modal.connect()
     const provider = new ethers.providers.Web3Provider(connection)
     const signer = provider.getSigner()
-    console.log('provider: ', provider)
+    console.log('provider: ', provider, 'signer: ', signer)
     // mint nft
+    const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
+    const mintTxn = await nftContract.mintToken(signer, tokenId, itemInfo.quantity, '0x00')
+    const txn = await mintTxn.wait()
+    console.log('txn: ', txn)
     // set uri as url
     // list on marketplace
   }
