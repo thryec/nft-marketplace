@@ -52,10 +52,12 @@ const Create = () => {
     const connection = await web3Modal.connect()
     const provider = new ethers.providers.Web3Provider(connection)
     const signer = provider.getSigner()
-    console.log('provider: ', provider, 'signer: ', signer)
+    const myAddress = await signer.getAddress()
+    // console.log('myAddress: ', myAddress)
     // mint nft
     const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
-    const mintTxn = await nftContract.mintToken(signer, tokenId, itemInfo.quantity, '0x00')
+    const mintTxn = await nftContract.mintToken(myAddress, tokenId, itemInfo.quantity.toString(), '0x00')
+    console.log('minting token...', mintTxn)
     const txn = await mintTxn.wait()
     console.log('txn: ', txn)
     // set uri as url
