@@ -1,31 +1,34 @@
-# NFT Marketplace
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-A simple Ethereum-based NFT Marketplace that allows users to mint ERC1155 tokens, view items in the marketplace, and buy/sell NFTs with other Ethereum accounts.
+## Getting Started
 
-## Functionality
+First, run the development server:
 
-1. Mint
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-Users are able to mint individual digital files from their local machine by uploading it with a name, description and price. These piece will be stored on IPFS using the Infura IPFS endpoint, and displayed in the Marketplace for other users to view and purchase.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-2. Buy/Sell
+You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
-Any item that an account mints will be automatically listed and can be bought by another account at the pre-determined price.
+[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
 
-3. View Gallery
+The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-Users can view all the NFTs they have minted, bought, and sold on the platform.
+## Learn More
 
-## Technologies Used
+To learn more about Next.js, take a look at the following resources:
 
--   Hardhat as the Solidity development framework
--   ethers.js for interacting with the Ethereum Blockchain and its ecosystem
--   Waffle/Chai for testing smart contracts
--   React.js to organize and display values on the frontend
--   IPFS to store NFT metadata
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-### Potential Add-Ons
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
--   Implementing royalties to transfer a certain portion of the transaction price to the owner of the marketplace
--   Give user option to mint ERC1155 or ERC721
--   Allow users to view all NFTs in their wallet (includes other NFT contracts)
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
