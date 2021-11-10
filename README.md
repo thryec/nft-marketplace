@@ -18,14 +18,20 @@ Users can view all the NFTs they have minted, bought, and sold on the platform.
 
 ## Technologies Used
 
--   Hardhat as the Solidity development framework
--   ethers.js for interacting with the Ethereum Blockchain and its ecosystem
--   Waffle/Chai for testing smart contracts
--   React.js to organize and display values on the frontend
--   IPFS to store NFT metadata
+- Hardhat as the Solidity development framework
+- ethers.js for interacting with the Ethereum Blockchain and its ecosystem
+- Waffle/Chai for testing smart contracts
+- React.js to organize and display values on the frontend
+- IPFS to store NFT metadata
 
 ### Potential Add-Ons
 
--   Implementing royalties to transfer a certain portion of the transaction price to the owner of the marketplace
--   Give user option to mint ERC1155 or ERC721
--   Allow users to view all NFTs in their wallet (includes other NFT contracts)
+- Implementing royalties to transfer a certain portion of the transaction price to the owner of the marketplace
+- Give user option to mint ERC1155 or ERC721
+- Allow users to view all NFTs in their wallet (includes other NFT contracts)
+
+### Dependencies to install
+
+- ethers
+- Web3Modal
+- ipfs-http-client
