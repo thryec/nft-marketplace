@@ -10,6 +10,23 @@ const myGallery = () => {
   const [myNFTs, setMyNFTs] = useState([])
   const [isLoaded, setIsLoaded] = useState(false)
 
+  const fetchMyNFTs = async () => {
+    const web3modal = new Web3Modal()
+    const connection = await web3modal.connect()
+    const provider = new ethers.providers.Web3Provider(connection)
+    const signer = provider.getSigner()
+
+    const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
+    const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
+
+    const data = await marketplaceContract.getItemsOwned()
+    console.log('my items: ', data)
+  }
+
+  useEffect(() => {
+    fetchMyNFTs()
+  }, [])
+
   return isLoaded ? <div style={bodyStyle}>Display NFTs here</div> : <div style={bodyStyle}>No Assets Owned</div>
 }
 const bodyStyle = {
