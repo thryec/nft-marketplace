@@ -19,7 +19,7 @@ const Create = () => {
     quantity: '',
   })
   const [listedItems, setListedItems] = useState([])
-  const router = useRouter()
+  // const router = useRouter()
 
   const onFileUpload = async (e) => {
     const file = e.target.files[0]
@@ -70,12 +70,17 @@ const Create = () => {
     const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
     const price = ethers.utils.parseUnits(itemInfo.price, 'ether')
     console.log('price: ', price)
-    const listTxn = await marketplaceContract.listItemForSale(nftaddress, tokenId, 1, price)
-    await listTxn.wait()
-    console.log('listTxn: ', listTxn)
+    // approve user to transfer token from NFT contract to Marketplace contract
+    await nftContract.connect(signer).setApprovalForAll(marketplaceContract.address, true)
+    console.log('signer approved')
+    // const listTxn = await marketplaceContract.listItemForSale(nftaddress, tokenId, 1, price)
+    // await listTxn.wait()
+    // console.log('listTxn: ', listTxn)
 
     setFileUrl('')
   }
+
+  const fetchExistingTokens = async () => {}
 
   const fetchTokenURI = async () => {
     const web3Modal = new Web3Modal()
