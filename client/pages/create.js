@@ -62,12 +62,12 @@ const Create = () => {
 
     const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
     console.log('starting mint.....')
-    const mintTxn = await nftContract.mintToken(myAddress, tokenId, itemInfo.quantity.toString(), '0x00')
+    const mintTxn = await nftContract.mintToken(myAddress, itemInfo.quantity.toString(), '0x00')
     const txn = await mintTxn.wait()
     console.log('mintTxn: ', txn)
 
-    await nftContract.setTokenURI(tokenId, url)
-    console.log('tokenURI set')
+    // await nftContract.setTokenURI(tokenId, url)
+    // console.log('tokenURI set')
     setIsMinted(true)
   }
 
@@ -80,7 +80,6 @@ const Create = () => {
     const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
     const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
     const price = ethers.utils.parseUnits(itemInfo.price, 'ether')
-    console.log('price: ', price)
 
     // approve user to transfer token from NFT contract to Marketplace contract
     await nftContract.connect(signer).setApprovalForAll(marketplaceContract.address, true)

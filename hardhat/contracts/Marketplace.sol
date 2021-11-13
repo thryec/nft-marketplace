@@ -61,7 +61,6 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     ) public payable nonReentrant {
         // require(msg.value == listingCost, 'ETH sent must equal to listing cost');
         require(price > 0, 'Item price must be greater than zero');
-        console.log('msg sender: ', msg.sender);
 
         _itemIds.increment();
         uint itemId = _itemIds.current();

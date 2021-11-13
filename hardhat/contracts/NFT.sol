@@ -22,11 +22,12 @@ contract NFT is ERC1155, Ownable {
 
     function mintToken(
         address account,
-        uint tokenId,
         uint amount,
         bytes memory data
     ) public returns (uint _tokenId) {
+        uint tokenId = _tokenIds.current(); 
         _mint(account, tokenId, amount, data);
+        _tokenIds.increment(); 
         return _tokenId; 
     }
 
