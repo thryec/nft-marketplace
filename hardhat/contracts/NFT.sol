@@ -29,7 +29,7 @@ contract NFT is ERC1155, Ownable {
         uint currentTokenId = _tokenIds.current();
 
         _mint(msg.sender, currentTokenId, quantity, data);
-        console.log('done minting token');
+        console.log('done minting token: ', currentTokenId);
         setApprovalForAll(marketplaceAddress, true);
         console.log('done setting approval');
         setTokenURI(currentTokenId, tokenURI);
@@ -46,11 +46,10 @@ contract NFT is ERC1155, Ownable {
     }
 
     function burnTokens(
-        address from,
         uint _tokenId,
         uint quantity
     ) public {
-        _burn(from, _tokenId, quantity);
+        _burn(msg.sender, _tokenId, quantity);
     }
 
     // ------------------ Read Functions ---------------------- //
@@ -63,8 +62,8 @@ contract NFT is ERC1155, Ownable {
         return marketplaceAddress;
     }
 
-    function checkIfOwner(address caller, uint _tokenId) public view returns (bool) {
-        if (balanceOf(caller, _tokenId) > 0) {
+    function checkIfOwner( uint _tokenId) public view returns (bool) {
+        if (balanceOf(msg.sender, _tokenId) > 0) {
             return true;
         }
         return false;
