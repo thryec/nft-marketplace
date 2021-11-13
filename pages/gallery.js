@@ -1,6 +1,5 @@
 import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import Web3Modal from 'web3modal'
 import { nftaddress, marketplaceaddress } from '../../config'
 import NFT from '../../hardhat/artifacts/contracts/NFT.sol/NFT.json'
@@ -19,12 +18,17 @@ const myGallery = () => {
     const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
     const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
 
+    console.log('fetching items')
     const data = await marketplaceContract.getItemsOwned()
-    // console.log('my items: ', data)
+    console.log('my items: ', data)
+
+    data.map((el) => {
+      console.log(el)
+    })
   }
 
   useEffect(() => {
-    fetchMyNFTs()
+    // fetchMyNFTs()
   }, [])
 
   return isLoaded ? <div style={bodyStyle}>Display NFTs here</div> : <div style={bodyStyle}>No Assets Owned</div>
