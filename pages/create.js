@@ -39,7 +39,6 @@ const Create = () => {
       return
     }
     setListedItems([...listedItems, { tokenId: tokenId, url: fileUrl }])
-    setTokenId(tokenId + 1)
     const data = JSON.stringify({ name, description, image: fileUrl })
     try {
       const addedFile = await client.add(data)
@@ -73,14 +72,13 @@ const Create = () => {
     // approve user to transfer token from NFT contract to Marketplace contract
     await nftContract.connect(signer).setApprovalForAll(marketplaceContract.address, true)
     console.log('signer approved')
-    // const listTxn = await marketplaceContract.listItemForSale(nftaddress, tokenId, 1, price)
-    // await listTxn.wait()
-    // console.log('listTxn: ', listTxn)
-
+    const listTxn = await marketplaceContract.listItemForSale(nftaddress, tokenId, 1, price)
+    await listTxn.wait()
+    console.log('listTxn: ', listTxn)
+    console.log('item listed')
     setFileUrl('')
+    setTokenId(tokenId + 1)
   }
-
-  const fetchExistingTokens = async () => {}
 
   const fetchTokenURI = async () => {
     const web3Modal = new Web3Modal()
@@ -102,21 +100,25 @@ const Create = () => {
           placeholder="Item Name"
           onChange={(e) => setItemInfo({ ...itemInfo, name: e.target.value })}
           style={inputFields}
+          value={itemInfo.name}
         />
         <textarea
           placeholder="Item Description"
           onChange={(e) => setItemInfo({ ...itemInfo, description: e.target.value })}
           style={inputFields}
+          value={itemInfo.description}
         />
         <input
           placeholder="List Price"
           onChange={(e) => setItemInfo({ ...itemInfo, price: e.target.value })}
           style={inputFields}
+          value={itemInfo.price}
         />
         <input
           placeholder="List Quantity"
           onChange={(e) => setItemInfo({ ...itemInfo, quantity: e.target.value })}
           style={inputFields}
+          value={itemInfo.quantity}
         />
         <input type="file" onChange={onFileUpload} style={inputFields} />
         <button
@@ -129,7 +131,6 @@ const Create = () => {
         </button>
         <div>
           <button onClick={fetchTokenURI}>Fetch Token URI</button>
-          {/* {JSON.stringify(listedItems)} */}
         </div>
         <hr />
         {fileUrl && <img src={fileUrl} width="800px" />}

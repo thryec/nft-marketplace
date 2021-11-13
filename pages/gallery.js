@@ -20,7 +20,7 @@ const myGallery = () => {
     const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
 
     const data = await marketplaceContract.getItemsOwned()
-    console.log('my items: ', data)
+    // console.log('my items: ', data)
   }
 
   useEffect(() => {
