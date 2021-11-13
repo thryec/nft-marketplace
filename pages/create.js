@@ -13,7 +13,7 @@ const client = create('https://ipfs.infura.io:5001/api/v0')
 
 const Create = () => {
   const [fileUrl, setFileUrl] = useState('')
-  const [tokenId, setTokenId] = useState(5)
+  const [tokenId, setTokenId] = useState(6)
   const [itemInfo, setItemInfo] = useState({
     name: '',
     description: '',
@@ -21,6 +21,7 @@ const Create = () => {
     quantity: '',
   })
   const [listedItems, setListedItems] = useState([])
+  const [isMinted, setIsMinted] = useState(false)
   // const router = useRouter()
 
   const onFileUpload = async (e) => {
@@ -67,8 +68,7 @@ const Create = () => {
 
     await nftContract.setTokenURI(tokenId, url)
     console.log('tokenURI set')
-    // const img = await nftContract.getTokenURI(3)
-    // console.log('token URI: ', img)
+    setIsMinted(true)
   }
 
   const listOnMarketplace = async (url) => {
@@ -110,14 +110,24 @@ const Create = () => {
     <div style={bodyStyle}>
       <h2>Upload Your Creation Here</h2>
       <div style={inputStyle}>
-        <input placeholder="Item Name" onChange={(e) => setItemInfo({ ...itemInfo, name: e.target.value })} style={inputFields} value={itemInfo.name} />
+        <input
+          placeholder="Item Name"
+          onChange={(e) => setItemInfo({ ...itemInfo, name: e.target.value })}
+          style={inputFields}
+          value={itemInfo.name}
+        />
         <textarea
           placeholder="Item Description"
           onChange={(e) => setItemInfo({ ...itemInfo, description: e.target.value })}
           style={inputFields}
           value={itemInfo.description}
         />
-        <input placeholder="List Price" onChange={(e) => setItemInfo({ ...itemInfo, price: e.target.value })} style={inputFields} value={itemInfo.price} />
+        <input
+          placeholder="List Price"
+          onChange={(e) => setItemInfo({ ...itemInfo, price: e.target.value })}
+          style={inputFields}
+          value={itemInfo.price}
+        />
         <input
           placeholder="List Quantity"
           onChange={(e) => setItemInfo({ ...itemInfo, quantity: e.target.value })}
@@ -125,26 +135,25 @@ const Create = () => {
           value={itemInfo.quantity}
         />
         <input type="file" onChange={onFileUpload} style={inputFields} />
-        <Stack spacing={2} direction="row">
-          <Button
-            onClick={() => {
-              createSaleItem()
-            }}
-            style={inputFields}
-            variant="contained"
-          >
-            Mint NFT
-          </Button>
-          <Button
-            onClick={() => {
-              listOnMarketplace()
-            }}
-            style={inputFields}
-            variant="contained"
-          >
-            List NFT
-          </Button>
-        </Stack>
+        {isMinted ? (
+          <Stack spacing={2} direction="row">
+            <Button onClick={createSaleItem} style={inputFields} variant="contained" disabled>
+              Mint NFT
+            </Button>
+            <Button onClick={listOnMarketplace} style={inputFields} variant="contained">
+              List NFT
+            </Button>
+          </Stack>
+        ) : (
+          <Stack spacing={2} direction="row">
+            <Button onClick={createSaleItem} style={inputFields} variant="contained">
+              Mint NFT
+            </Button>
+            <Button onClick={listOnMarketplace} style={inputFields} variant="contained" disabled>
+              List NFT
+            </Button>
+          </Stack>
+        )}
         <div>
           <button onClick={fetchTokenURI}>Fetch Token URI</button>
         </div>
