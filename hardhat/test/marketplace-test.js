@@ -131,12 +131,12 @@ describe('NFT Marketplace', function () {
             const newSellerBalance = await provider.getBalance(seller1.address)
             const newBuyerBalance = await provider.getBalance(buyer1.address)
 
-            console.log('change in seller balance: ', newSellerBalance - originalSellerBalance)
-            console.log('change in buyer balance: ', newBuyerBalance - originalBuyerBalance)
-
             const priceInWei = ethers.utils.parseUnits('1', 'ether')
             expect(newSellerBalance - originalSellerBalance > priceInWei).to.be.true
             expect(originalBuyerBalance - newBuyerBalance > priceInWei * 2).to.be.true
+
+            // console.log('change in seller balance: ', newSellerBalance - originalSellerBalance)
+            // console.log('change in buyer balance: ', newBuyerBalance - originalBuyerBalance)
         })
     })
 
@@ -166,38 +166,42 @@ describe('NFT Marketplace', function () {
         })
     })
 
-    // describe('Retrieving Items', async () => {
-    //     beforeEach(async () => {
-    //         await nft.mintToken(seller1.address, 10, '0x00')
-    //         await nft.mintToken(seller1.address, 5, '0x00')
-    //         await marketplace.connect(seller1).listItemForSale(nftAddress, 0, 8, listPrice)
-    //         await marketplace.connect(seller1).listItemForSale(nftAddress, 1, 4, listPrice)
-    //     })
+    describe('Retrieving Items', async () => {
+        beforeEach(async () => {
+            await nft
+                .connect(seller1)
+                .mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 10, '0x00')
+            await nft
+                .connect(seller1)
+                .mintToken('https://ipfs.io/ipfs/QmQ35DkX8HHjhkJe5MsMAd4X51iP3MHV5d5dZoee32J83k', 5, '0x00')
+            await marketplace.connect(seller1).listItemForSale(nftAddress, 1, 8, listPrice)
+            await marketplace.connect(seller1).listItemForSale(nftAddress, 2, 4, listPrice)
+        })
 
-    //     it('Should fetch the correct quantity of NFTs created', async () => {
-    //         const seller1Tokens = await marketplace.connect(seller1).getItemsCreated()
-    //         expect(seller1Tokens.length).to.equal(2)
-    //         expect(seller1Tokens[0].quantityListed).to.equal(8)
-    //         expect(seller1Tokens[1].quantityListed).to.equal(4)
-    //     })
+        it('Should fetch the correct quantity of NFTs created', async () => {
+            const seller1Tokens = await marketplace.connect(seller1).getItemsCreated()
+            expect(seller1Tokens.length).to.equal(2)
+            expect(seller1Tokens[0].quantityListed).to.equal(8)
+            expect(seller1Tokens[1].quantityListed).to.equal(4)
+        })
 
-    //     it('Should fetch the correct quantity of NFTs owned', async () => {
-    //         // Note: only works for one edition per token for now
-    //         const originalSeller1Tokens = await marketplace.connect(seller1).getItemsOwned()
-    //         console.log(
-    //             'originalSeller1Token0: ',
-    //             originalSeller1Tokens[0].quantityListed._hex,
-    //             'originalSeller1Token1: ',
-    //             originalSeller1Tokens[1].quantityListed._hex
-    //         )
-    //         await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 2, { value: listPrice })
-    //         await marketplace.connect(buyer2).purchaseItems(nftAddress, 2, 2, { value: listPrice })
-    //         const newSeller1Tokens = await marketplace.connect(seller1).getItemsOwned()
-    //         console.log('newSeller1Tokens: ', newSeller1Tokens)
-    //         const buyer1Owned = await marketplace.connect(buyer1).getItemsOwned()
-    //         const buyer2Owned = await marketplace.connect(buyer2).getItemsOwned()
-    //         console.log('buyer1Owned: ', buyer1Owned)
-    //         console.log('buyer2Owned: ', buyer2Owned)
-    //     })
-    // })
+        it('Should fetch the correct quantity of NFTs owned', async () => {
+            // Note: only works for one edition per token for now
+            const originalSeller1Tokens = await marketplace.connect(seller1).getItemsOwned()
+            console.log(
+                'originalSeller1Token0: ',
+                originalSeller1Tokens[0].quantityListed._hex,
+                'originalSeller1Token1: ',
+                originalSeller1Tokens[1].quantityListed._hex
+            )
+            await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 2, { value: listPrice })
+            await marketplace.connect(buyer2).purchaseItems(nftAddress, 2, 2, { value: listPrice })
+            const newSeller1Tokens = await marketplace.connect(seller1).getItemsOwned()
+            console.log('newSeller1Tokens: ', newSeller1Tokens)
+            const buyer1Owned = await marketplace.connect(buyer1).getItemsOwned()
+            const buyer2Owned = await marketplace.connect(buyer2).getItemsOwned()
+            console.log('buyer1Owned: ', buyer1Owned)
+            console.log('buyer2Owned: ', buyer2Owned)
+        })
+    })
 })
