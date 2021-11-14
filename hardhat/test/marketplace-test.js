@@ -98,11 +98,8 @@ describe('NFT Marketplace', function () {
             const seller2Item = await marketplace.getItemById(3)
 
             expect(await ownersItem.isListed).to.be.true
-            expect(await ownersItem.isSold).to.be.false
             expect(await seller1Item.isListed).to.be.true
-            expect(await seller1Item.isSold).to.be.false
             expect(await seller2Item.isListed).to.be.true
-            expect(await seller2Item.isSold).to.be.false
         })
 
         it('Should throw an error if listPrice < 0', async () => {
@@ -112,19 +109,21 @@ describe('NFT Marketplace', function () {
         })
 
         it('Should transfer NFT to buyer when purchase is made', async () => {
-            await marketplace.listItemForSale(nftAddress, 1, 1, listPrice)
+            await marketplace.connect(seller1).listItemForSale(nftAddress, 2, 1, listPrice)
+            await marketplace.connect(seller2).listItemForSale(nftAddress, 3, 1, listPrice)
+
             await marketplace.connect(buyer1).purchaseItems(nftAddress, 2, 1, { value: listPrice })
             await marketplace.connect(buyer2).purchaseItems(nftAddress, 3, 1, { value: listPrice })
 
-            const ownerToken0Balance = await nft.balanceOf(contractOwner.address, 0)
-            const ownerToken1Balance = await nft.balanceOf(contractOwner.address, 1)
-            expect(ownerToken0Balance).to.equal(4)
-            expect(ownerToken1Balance).to.equal(9)
+            const seller1TokenBalance = await nft.balanceOf(contractOwner.address, 2)
+            const seller2TokenBalance = await nft.balanceOf(contractOwner.address, 3)
+            expect(seller1TokenBalance).to.equal(9)
+            expect(seller2TokenBalance).to.equal(14)
 
-            const buyer1Token0Balance = await nft.balanceOf(buyer1.address, 0)
-            const buyer2Token1Balance = await nft.balanceOf(buyer2.address, 1)
-            expect(buyer1Token0Balance).to.equal(1)
-            expect(buyer2Token1Balance).to.equal(1)
+            const buyer1TokenBalance = await nft.balanceOf(buyer1.address, 2)
+            const buyer2TokenBalance = await nft.balanceOf(buyer2.address, 3)
+            expect(buyer1TokenBalance).to.equal(1)
+            expect(buyer2TokenBalance).to.equal(1)
         })
 
         // it('Should transfer cost of NFT to seller when purchase is made', async () => {
