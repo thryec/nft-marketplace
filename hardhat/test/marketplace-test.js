@@ -140,31 +140,31 @@ describe('NFT Marketplace', function () {
         })
     })
 
-    // describe('Listing Permissions', async () => {
-    //     beforeEach(async () => {
-    //         await nft.mintToken(contractOwner.address, 5, '0x00')
-    //         await nft.mintToken(contractOwner.address, 10, '0x00')
-    //         await marketplace.listItemForSale(nftAddress, 0, 1, listPrice)
-    //         await marketplace.listItemForSale(nftAddress, 1, 1, listPrice)
-    //     })
+    describe('Listing Permissions', async () => {
+        beforeEach(async () => {
+            await nft.mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 5, '0x00')
+            await nft.mintToken('https://ipfs.io/ipfs/QmQ35DkX8HHjhkJe5MsMAd4X51iP3MHV5d5dZoee32J83k', 10, '0x00')
+            await marketplace.listItemForSale(nftAddress, 1, 1, listPrice)
+            await marketplace.listItemForSale(nftAddress, 2, 1, listPrice)
+        })
 
-    //     it('Should allow owner of NFT to delist item', async () => {
-    //         const originalListedItems = await marketplace.getListedItems()
-    //         await marketplace.delistItem(1)
-    //         const newListedItems = await marketplace.getListedItems()
-    //         expect(originalListedItems.length - newListedItems.length).to.equal(1)
-    //     })
+        it('Should allow owner of NFT to delist item', async () => {
+            const originalListedItems = await marketplace.getListedItems()
+            await marketplace.delistItem(1)
+            const newListedItems = await marketplace.getListedItems()
+            expect(originalListedItems.length - newListedItems.length).to.equal(1)
+        })
 
-    //     it('Should allow owner of NFT to list an item they have purchased', async () => {
-    //         await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 1, { value: listPrice })
-    //         const originalListedItems = await marketplace.getListedItems()
-    //         // console.log('originalListedItems: ', originalListedItems)
-    //         await marketplace.connect(buyer1).relistItem(1)
-    //         const newListedItems = await marketplace.getListedItems()
-    //         // console.log('newListedItems: ', newListedItems)
-    //         expect(newListedItems.length - originalListedItems.length).to.equal(1)
-    //     })
-    // })
+        it('Should allow owner of NFT to list an item they have purchased', async () => {
+            await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 1, { value: listPrice })
+            const originalListedItems = await marketplace.getListedItems()
+            // console.log('originalListedItems: ', originalListedItems)
+            await marketplace.connect(buyer1).relistItem(1)
+            const newListedItems = await marketplace.getListedItems()
+            // console.log('newListedItems: ', newListedItems)
+            expect(newListedItems.length - originalListedItems.length).to.equal(1)
+        })
+    })
 
     // describe('Retrieving Items', async () => {
     //     beforeEach(async () => {
