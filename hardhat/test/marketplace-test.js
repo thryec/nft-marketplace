@@ -75,7 +75,7 @@ describe('NFT Marketplace', function () {
         })
     })
 
-    describe('Market Transactions', async () => {
+    describe('Marketplace Transactions', async () => {
         listPrice = ethers.utils.parseUnits('10', 'ether')
 
         beforeEach(async () => {
@@ -86,18 +86,14 @@ describe('NFT Marketplace', function () {
             await nft
                 .connect(seller2)
                 .mintToken('https://ipfs.io/ipfs/QmdkkCULcRZKQBTRLZGZnFSAwD65uL77AXPvB7rc3QVwnP', 15, '0x00')
+            await marketplace.connect(seller1).listItemForSale(nftAddress, 2, 1, listPrice)
+            await marketplace.connect(seller2).listItemForSale(nftAddress, 3, 1, listPrice)
         })
 
         it('Should successfully list items for sale', async () => {
-            await marketplace.listItemForSale(nftAddress, 1, 1, listPrice)
-            await marketplace.connect(seller1).listItemForSale(nftAddress, 2, 1, listPrice)
-            await marketplace.connect(seller2).listItemForSale(nftAddress, 3, 1, listPrice)
+            const seller1Item = await marketplace.getItemById(1)
+            const seller2Item = await marketplace.getItemById(2)
 
-            const ownersItem = await marketplace.getItemById(1)
-            const seller1Item = await marketplace.getItemById(2)
-            const seller2Item = await marketplace.getItemById(3)
-
-            expect(await ownersItem.isListed).to.be.true
             expect(await seller1Item.isListed).to.be.true
             expect(await seller2Item.isListed).to.be.true
         })
@@ -109,9 +105,6 @@ describe('NFT Marketplace', function () {
         })
 
         it('Should transfer NFT to buyer when purchase is made', async () => {
-            await marketplace.connect(seller1).listItemForSale(nftAddress, 2, 1, listPrice)
-            await marketplace.connect(seller2).listItemForSale(nftAddress, 3, 1, listPrice)
-
             await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 1, { value: listPrice })
             await marketplace.connect(buyer2).purchaseItems(nftAddress, 2, 1, { value: listPrice })
 
@@ -128,22 +121,27 @@ describe('NFT Marketplace', function () {
             // console.log('buyer1: ', buyer1TokenBalance, 'buyer2: ', buyer2TokenBalance)
         })
 
-        // it('Should transfer cost of NFT to seller when purchase is made', async () => {
-        //     const originalOwnerBalance = await provider.getBalance(contractOwner.address)
-        //     const originalBuyerBalance = await provider.getBalance(buyer1.address)
-        //     // console.log('originalOwnerBalance', originalOwnerBalance.toString(), 'originalBuyerBalance', originalBuyerBalance.toString())
-        //     await marketplace.listItemForSale(nftAddress, 0, 1, listPrice)
-        //     await marketplace.listItemForSale(nftAddress, 1, 1, listPrice)
-        //     await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 1, { value: listPrice })
-        //     await marketplace.connect(buyer1).purchaseItems(nftAddress, 2, 1, { value: listPrice })
-        //     const newOwnerBalance = await provider.getBalance(contractOwner.address)
-        //     const newBuyerBalance = await provider.getBalance(buyer1.address)
-        //     // console.log('newOwnerBalance', newOwnerBalance.toString(), 'newBuyerBalance', newBuyerBalance.toString())
+        it('Should transfer cost of NFT to seller when purchase is made', async () => {
+            const originalOwnerBalance = await provider.getBalance(contractOwner.address)
+            const originalSellerBalance = await provider.getBalance(seller1.address)
+            const originalBuyerBalance = await provider.getBalance(buyer1.address)
 
-        //     const priceInWei = ethers.utils.parseUnits('4', 'ether')
-        //     expect(newOwnerBalance - originalOwnerBalance > priceInWei).to.be.true
-        //     expect(originalBuyerBalance - newBuyerBalance > priceInWei).to.be.true
-        // })
+            await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 1, { value: listPrice })
+            await marketplace.connect(buyer1).purchaseItems(nftAddress, 2, 1, { value: listPrice })
+
+            const newOwnerBalance = await provider.getBalance(contractOwner.address)
+            const newSellerBalance = await provider.getBalance(seller1.address)
+            const newBuyerBalance = await provider.getBalance(buyer1.address)
+
+            // console.log('change in owner balance: ', newOwnerBalance - originalOwnerBalance)
+            // console.log('change in seller balance: ', newSellerBalance - originalSellerBalance)
+            // console.log('change in buyer balance: ', newBuyerBalance - originalBuyerBalance)
+
+            const priceInWei = ethers.utils.parseUnits('1', 'ether')
+            expect(newOwnerBalance - originalOwnerBalance > priceInWei).to.be.true
+            expect(newSellerBalance - originalSellerBalance > priceInWei).to.be.true
+            expect(originalBuyerBalance - newBuyerBalance > priceInWei * 2).to.be.true
+        })
     })
 
     // describe('Listing Permissions', async () => {

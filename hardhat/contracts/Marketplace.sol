@@ -71,7 +71,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
             payable(msg.sender),
             payable(msg.sender),
             price,
-            true
+            true 
         );
 
         IERC1155(nftAddress).safeTransferFrom(msg.sender, address(this), _tokenId, _quantity, '0x00');
@@ -125,12 +125,12 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         return listingCost;
     }
 
-    function getTokenPrice(uint _tokenId) public view returns (uint price) {
-        return itemsMapping[_tokenId].price;
+    function getItemPrice(uint _itemId) public view returns (uint price) {
+        return itemsMapping[_itemId].price;
     }
 
-    function getItemById(uint _tokenId) public view returns (Item memory) {
-        return itemsMapping[_tokenId];
+    function getItemById(uint _itemId) public view returns (Item memory) {
+        return itemsMapping[_itemId];
     }
 
     function getListedItems() public view returns (Item[] memory) {
