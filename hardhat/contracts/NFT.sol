@@ -29,17 +29,14 @@ contract NFT is ERC1155, Ownable {
         uint currentTokenId = _tokenIds.current();
 
         _mint(msg.sender, currentTokenId, quantity, data);
-        console.log('done minting token: ', currentTokenId);
         setApprovalForAll(marketplaceAddress, true);
-        console.log('done setting approval');
         setTokenURI(currentTokenId, tokenURI);
-        console.log('done setting URI');
 
         return _tokenId;
     }
 
     function setTokenURI(uint _tokenId, string memory newURI) public {
-        bool owner = checkIfOwner(msg.sender, _tokenId);
+        bool owner = checkIfOwner(_tokenId);
         require(owner == true);
         require(bytes(_uris[_tokenId]).length == 0, 'Cannot set URI twice.');
         _uris[_tokenId] = newURI;
