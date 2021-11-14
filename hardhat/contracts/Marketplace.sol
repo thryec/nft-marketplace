@@ -89,8 +89,10 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     ) public payable nonReentrant {
         uint price = itemsMapping[_itemId].price;
         uint _tokenId = itemsMapping[_itemId].tokenId;
-        // console.log('msg.value: ', msg.value, 'price: ', price);
+        bool isForSale = itemsMapping[_itemId].isListed;
+        require(isForSale == true, 'Item requested is not for sale.'); 
         require(msg.value == price, 'Please submit the correct amount of coins for desired quantity and price.');
+
 
         IERC1155(nftContract).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, '0x00');
         itemsMapping[_itemId].owner = payable(msg.sender);
