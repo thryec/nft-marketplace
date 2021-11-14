@@ -91,11 +91,12 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         require(msg.value == price, 'Please submit the correct amount of coins for desired quantity and price.');
 
         IERC1155(nftAddress).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, '0x00');
+        itemsMapping[_itemId].seller.transfer(msg.value);
         itemsMapping[_itemId].owner = payable(msg.sender);
         itemsMapping[_itemId].quantityListed = itemsMapping[_itemId].quantityListed - _quantity; 
         itemsMapping[_itemId].isListed = false;
 
-        payable(marketplaceOwner).transfer(msg.value);
+        // payable(marketplaceOwner).transfer(msg.value);
     }
 
     function delistItem(uint _itemId) public {
