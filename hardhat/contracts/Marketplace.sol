@@ -10,22 +10,30 @@ import 'hardhat/console.sol';
 
 contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     // ------------------ Variable Declarations ---------------------- //
-    // itemId to keep track of the number of items listed for sale on the marketplace.
+
+    /// @notice itemId to keep track of the number of items listed for sale on the marketplace
     using Counters for Counters.Counter;
     Counters.Counter private _itemIds;
 
-    // royalties will be charged as a percentage of an item's sale price. This value is defined in the constructor upon deployment and will accept integers between 0 - 100.
+    /** 
+        @notice Royalties are charged as a percentage of an item's sale price. 
+        @dev This value is to be defined in the constructor upon deployment and will accept integers between 0 - 100.
+     */
     uint royalties;
+
+    /// @dev owner of the marketplace declared as msg.sender in the constructor.
     address payable marketplaceOwner;
+
+    /// @notice itemId => Item struct
     mapping(uint => Item) private itemsMapping;
 
-    /// Sets the owner of the Marketplace contract as the contract deployer
+    /// @notice Sets the owner of the Marketplace contract as the contract deployer, and initializes proportion of royalties that will go to the marketplace.
     constructor(uint royalty) {
         marketplaceOwner = payable(msg.sender);
         royalties = royalty;
     }
 
-    /// Initialize a struct to contain the information required for items listed on the Marketplace
+    /// @notice Item struct to store variables required for items listed on the Marketplace
     struct Item {
         address nftAddress;
         uint tokenId;
@@ -52,6 +60,14 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
 
     // ------------------ Mutative Functions ---------------------- //
 
+    /**
+        @notice Public function listing existing items in the user's wallet for sale on the marketplace. Passes variables into listItem function to execute the listing.  
+        @dev Reverts with an error if listing price is not a positive number. 
+        @param nftAddress contract address of the NFT to be listed 
+        @param _tokenId tokenId of the NFT to be listed
+        @param _quantity number of NFTs to  be listed 
+        @param price list price of each listed NFT
+    */
     function listItemsForSale(
         address nftAddress,
         uint _tokenId,
@@ -64,6 +80,13 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         }
     }
 
+    /**
+        @notice Internal function with variables passed down from listItemsForSale. Executes listing of item by adding new items into the mapping 
+        @dev Transfers the NFT from the owner's wallet to the marketplace. 
+        @param nftAddress contract address of the NFT to be listed  
+        @param _tokenId tokenId of the NFT to be listed
+        @param price list price of each listed NFT
+    */
     function listItem(
         address nftAddress,
         uint _tokenId,
@@ -86,6 +109,14 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         emit ItemListed(nftAddress, _tokenId, itemId, msg.sender, msg.sender, address(0), price, true);
     }
 
+    /**
+        @notice Allows buyer to purchase one or more NFTs 
+        @dev Transfers the desired quantity of tokens from the marketplace to the buyer 
+        @dev Transfer a portion of ether sent by the buyer to the marketplace as royalties. Remaining ether is transferred to the seller. 
+        @param nftAddress contract address of the NFT to be purchased
+        @param _itemId itemId of the NFT to be purchased 
+        @param _quantity number of NFTs to be purchased
+    */
     function purchaseItems(
         address nftAddress,
         uint _itemId,
@@ -96,7 +127,10 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         bool isForSale = itemsMapping[_itemId].isListed;
 
         require(isForSale == true, 'Item requested is not for sale.');
-        require(msg.value == price * _quantity, 'Please submit the correct amount of coins for desired quantity and price.');
+        require(
+            msg.value == price * _quantity,
+            'Please submit the correct amount of coins for desired quantity and price.'
+        );
 
         uint royaltiesToMarketplace = ((royalties * msg.value) / 100);
         uint etherToSeller = msg.value - royaltiesToMarketplace;
@@ -108,27 +142,29 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         itemsMapping[_itemId].isListed = false;
     }
 
+    /**
+        @notice Allows the owner of the NFT to delist their item 
+        @dev Requires the caller to be the owner of the item. Sets the 'isListed' property of the item in the mapping to false. 
+        @param _itemId itemId of the NFT to be delisted
+    */
     function delistItem(uint _itemId) public {
         address itemOwner = itemsMapping[_itemId].owner;
         require(msg.sender == itemOwner, 'msg sender is not owner of item');
         itemsMapping[_itemId].isListed = false;
     }
 
+    /**
+        @notice Allows the owner of the NFT to relist their item. 
+        @dev Requires the caller to be the owner of the item. Sets the 'isListed' property of the item in the mapping to true. 
+        @param _itemId itemId of the NFT to be relisted
+    */
     function relistItem(uint _itemId) public {
         require(msg.sender == itemsMapping[_itemId].owner, 'msg sender is not owner of item');
         itemsMapping[_itemId].isListed = true;
     }
 
-    function transferItem(
-        address nftAddress,
-        address receiver,
-        uint _tokenId,
-        uint _quantity
-    ) public {
-        IERC1155(nftAddress).safeTransferFrom(msg.sender, receiver, _tokenId, _quantity, '0x00');
-    }
-
     // ------------------ Read Functions ---------------------- //
+
 
     function getItemPrice(uint _itemId) public view returns (uint price) {
         return itemsMapping[_itemId].price;
