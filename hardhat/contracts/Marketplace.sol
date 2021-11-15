@@ -68,7 +68,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         address nftAddress,
         uint _tokenId,
         uint price
-    ) internal nonReentrant {
+    ) internal {
         _itemIds.increment();
         uint itemId = _itemIds.current();
         itemsMapping[itemId] = Item(
@@ -96,7 +96,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         bool isForSale = itemsMapping[_itemId].isListed;
 
         require(isForSale == true, 'Item requested is not for sale.');
-        require(msg.value == price, 'Please submit the correct amount of coins for desired quantity and price.');
+        require(msg.value == price * _quantity, 'Please submit the correct amount of coins for desired quantity and price.');
 
         uint royaltiesToMarketplace = ((royalties * msg.value) / 100);
         uint etherToSeller = msg.value - royaltiesToMarketplace;
@@ -110,7 +110,6 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
 
     function delistItem(uint _itemId) public {
         address itemOwner = itemsMapping[_itemId].owner;
-        // console.log('msg.sender: ', msg.sender, 'owner: ', itemOwner);
         require(msg.sender == itemOwner, 'msg sender is not owner of item');
         itemsMapping[_itemId].isListed = false;
     }
@@ -120,7 +119,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         itemsMapping[_itemId].isListed = true;
     }
 
-    function transferItemToAddress(
+    function transferItem(
         address nftAddress,
         address receiver,
         uint _tokenId,

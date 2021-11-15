@@ -44,16 +44,8 @@ describe('NFT Marketplace', function () {
 
     describe('Minting Tokens', async () => {
         beforeEach(async () => {
-            const mintTxn0 = await nft.mintToken(
-                'https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS',
-                5,
-                '0x00'
-            )
-            const mintTxn1 = await nft.mintToken(
-                'https://ipfs.io/ipfs/QmQ35DkX8HHjhkJe5MsMAd4X51iP3MHV5d5dZoee32J83k',
-                10,
-                '0x00'
-            )
+            await nft.mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 5, '0x00')
+            await nft.mintToken('https://ipfs.io/ipfs/QmQ35DkX8HHjhkJe5MsMAd4X51iP3MHV5d5dZoee32J83k', 10, '0x00')
         })
 
         it('Should mint the correct quantity of NFTs', async () => {
@@ -131,10 +123,10 @@ describe('NFT Marketplace', function () {
             const newSellerBalance = await provider.getBalance(seller1.address)
             const newBuyerBalance = await provider.getBalance(buyer1.address)
 
-            console.log('change in seller balance: ', newSellerBalance - originalSellerBalance)
-            console.log('change in buyer balance: ', newBuyerBalance - originalBuyerBalance)
-            console.log('change in Marketplace balance: ', newMarketplaceBalance - originalMarketplaceBalance)
-            console.log('listPrice in wei: ', listPrice.toString())
+            // console.log('change in seller balance: ', newSellerBalance - originalSellerBalance)
+            // console.log('change in buyer balance: ', newBuyerBalance - originalBuyerBalance)
+            // console.log('change in Marketplace balance: ', newMarketplaceBalance - originalMarketplaceBalance)
+            // console.log('listPrice in wei: ', listPrice.toString())
 
             expect(newSellerBalance - originalSellerBalance > (listPrice * (1 - royalty)) / 100).to.be.true
             expect(originalBuyerBalance - newBuyerBalance > listPrice * 2).to.be.true
@@ -176,19 +168,16 @@ describe('NFT Marketplace', function () {
             await nft
                 .connect(seller1)
                 .mintToken('https://ipfs.io/ipfs/QmQ35DkX8HHjhkJe5MsMAd4X51iP3MHV5d5dZoee32J83k', 5, '0x00')
-            await marketplace.connect(seller1).listItemsForSale(nftAddress, 1, 8, listPrice)
-            await marketplace.connect(seller1).listItemsForSale(nftAddress, 2, 4, listPrice)
+            await marketplace.connect(seller1).listItemsForSale(nftAddress, 1, 5, listPrice)
+            await marketplace.connect(seller1).listItemsForSale(nftAddress, 2, 5, listPrice)
         })
 
         it('Should fetch the correct quantity of NFTs created', async () => {
             const seller1Tokens = await marketplace.connect(seller1).getItemsCreated()
-            expect(seller1Tokens.length).to.equal(2)
-            expect(seller1Tokens[0].quantityListed).to.equal(8)
-            expect(seller1Tokens[1].quantityListed).to.equal(4)
+            expect(seller1Tokens.length).to.equal(10)
         })
 
         it('Should fetch the correct quantity of NFTs owned', async () => {
-            // Note: only works for one edition per token for now
             const originalSeller1Tokens = await marketplace.connect(seller1).getItemsOwned()
             // console.log(
             //     'originalSeller1Token0: ',
