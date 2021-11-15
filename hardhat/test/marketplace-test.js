@@ -12,13 +12,14 @@ describe('NFT Marketplace', function () {
     let buyer1
     let buyer2
     let listPrice
+    let royalty = 5
     const provider = ethers.provider
 
     beforeEach(async () => {
         ;[contractOwner, seller1, seller2, buyer1, buyer2] = await ethers.getSigners()
 
         const Marketplace = await ethers.getContractFactory('Marketplace')
-        marketplace = await Marketplace.deploy()
+        marketplace = await Marketplace.deploy(royalty)
         await marketplace.deployed()
         marketplaceAddress = marketplace.address
 
@@ -26,9 +27,6 @@ describe('NFT Marketplace', function () {
         nft = await NFT.deploy(marketplaceAddress)
         await nft.deployed()
         nftAddress = nft.address
-
-        listingCost = await marketplace.getListingCost()
-        listingCost = listingCost.toString()
     })
 
     describe('Deployment', async () => {
@@ -121,13 +119,15 @@ describe('NFT Marketplace', function () {
             // console.log('buyer1: ', buyer1TokenBalance, 'buyer2: ', buyer2TokenBalance)
         })
 
-        it('Should transfer cost of NFT to seller when purchase is made', async () => {
+        it('Should transfer royalties to marketplace and remaining cost of NFT to seller when purchase is made', async () => {
+            const originalMarketplaceBalance = await provider.getBalance(contractOwner.address)
             const originalSellerBalance = await provider.getBalance(seller1.address)
             const originalBuyerBalance = await provider.getBalance(buyer1.address)
 
             await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 1, { value: listPrice })
             await marketplace.connect(buyer1).purchaseItems(nftAddress, 2, 1, { value: listPrice })
 
+            const newMarketplaceBalance = await provider.getBalance(contractOwner.address)
             const newSellerBalance = await provider.getBalance(seller1.address)
             const newBuyerBalance = await provider.getBalance(buyer1.address)
 
@@ -135,8 +135,9 @@ describe('NFT Marketplace', function () {
             expect(newSellerBalance - originalSellerBalance > priceInWei).to.be.true
             expect(originalBuyerBalance - newBuyerBalance > priceInWei * 2).to.be.true
 
-            // console.log('change in seller balance: ', newSellerBalance - originalSellerBalance)
-            // console.log('change in buyer balance: ', newBuyerBalance - originalBuyerBalance)
+            console.log('change in seller balance: ', newSellerBalance - originalSellerBalance)
+            console.log('change in buyer balance: ', newBuyerBalance - originalBuyerBalance)
+            console.log('change in Marketplace balance: ', newMarketplaceBalance - originalMarketplaceBalance)
         })
     })
 
@@ -188,20 +189,19 @@ describe('NFT Marketplace', function () {
         it('Should fetch the correct quantity of NFTs owned', async () => {
             // Note: only works for one edition per token for now
             const originalSeller1Tokens = await marketplace.connect(seller1).getItemsOwned()
-            console.log(
-                'originalSeller1Token0: ',
-                originalSeller1Tokens[0].quantityListed._hex,
-                'originalSeller1Token1: ',
-                originalSeller1Tokens[1].quantityListed._hex
-            )
+            // console.log(
+            //     'originalSeller1Token0: ',
+            //     originalSeller1Tokens[0].quantityListed._hex,
+            //     'originalSeller1Token1: ',
+            //     originalSeller1Tokens[1].quantityListed._hex
+            // )
             await marketplace.connect(buyer1).purchaseItems(nftAddress, 1, 2, { value: listPrice })
             await marketplace.connect(buyer2).purchaseItems(nftAddress, 2, 2, { value: listPrice })
             const newSeller1Tokens = await marketplace.connect(seller1).getItemsOwned()
-            console.log('newSeller1Tokens: ', newSeller1Tokens)
             const buyer1Owned = await marketplace.connect(buyer1).getItemsOwned()
             const buyer2Owned = await marketplace.connect(buyer2).getItemsOwned()
-            console.log('buyer1Owned: ', buyer1Owned)
-            console.log('buyer2Owned: ', buyer2Owned)
+            // console.log('buyer1Owned: ', buyer1Owned)
+            // console.log('buyer2Owned: ', buyer2Owned)
         })
     })
 })

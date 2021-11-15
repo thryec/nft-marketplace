@@ -10,16 +10,19 @@ import 'hardhat/console.sol';
 
 contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     // ------------------ Variable Declarations ---------------------- //
+    // itemId to keep track of the number of items listed for sale on the marketplace.
     using Counters for Counters.Counter;
     Counters.Counter private _itemIds;
 
-    uint listingCost = 0.01 ether;
+    // royalties will be charged as a percentage of an item's sale price. This value is defined in the constructor upon deployment and will accept integers between 0 - 100.
+    uint royalties;
     address payable marketplaceOwner;
     mapping(uint => Item) private itemsMapping;
 
     /// Sets the owner of the Marketplace contract as the contract deployer
-    constructor() {
+    constructor(uint royalty) {
         marketplaceOwner = payable(msg.sender);
+        royalties = royalty;
     }
 
     /// Initialize a struct to contain the information required for items listed on the Marketplace
@@ -71,7 +74,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
             payable(msg.sender),
             payable(msg.sender),
             price,
-            true 
+            true
         );
 
         IERC1155(nftAddress).safeTransferFrom(msg.sender, address(this), _tokenId, _quantity, '0x00');
@@ -87,16 +90,23 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         uint price = itemsMapping[_itemId].price;
         uint _tokenId = itemsMapping[_itemId].tokenId;
         bool isForSale = itemsMapping[_itemId].isListed;
-        require(isForSale == true, 'Item requested is not for sale.'); 
+        require(isForSale == true, 'Item requested is not for sale.');
         require(msg.value == price, 'Please submit the correct amount of coins for desired quantity and price.');
 
-        IERC1155(nftAddress).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, '0x00');
-        itemsMapping[_itemId].seller.transfer(msg.value);
-        itemsMapping[_itemId].owner = payable(msg.sender);
-        itemsMapping[_itemId].quantityListed = itemsMapping[_itemId].quantityListed - _quantity; 
-        itemsMapping[_itemId].isListed = false;
+        uint royaltiesToMarketplace = (royalties * msg.value / 100);
+        uint etherToSeller = msg.value - royaltiesToMarketplace;
 
-        // payable(marketplaceOwner).transfer(msg.value);
+        console.log('msgvalue: ', msg.value); 
+        console.log('royalty %: ', royalties * msg.value); 
+        console.log('royalties: ', royaltiesToMarketplace, 'to seller: ', etherToSeller); 
+
+
+        IERC1155(nftAddress).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, '0x00');
+        payable(marketplaceOwner).transfer(royaltiesToMarketplace);
+        itemsMapping[_itemId].seller.transfer(etherToSeller);
+        itemsMapping[_itemId].owner = payable(msg.sender);
+        itemsMapping[_itemId].quantityListed = itemsMapping[_itemId].quantityListed - _quantity;
+        itemsMapping[_itemId].isListed = false;
     }
 
     function delistItem(uint _itemId) public {
@@ -121,10 +131,6 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     }
 
     // ------------------ Read Functions ---------------------- //
-
-    function getListingCost() public view returns (uint) {
-        return listingCost;
-    }
 
     function getItemPrice(uint _itemId) public view returns (uint price) {
         return itemsMapping[_itemId].price;

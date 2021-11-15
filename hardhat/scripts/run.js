@@ -6,7 +6,7 @@ let nft
 
 const main = async () => {
     const Marketplace = await hre.ethers.getContractFactory('Marketplace')
-    marketplace = await Marketplace.deploy()
+    marketplace = await Marketplace.deploy(5)
     await marketplace.deployed()
     console.log('Marketplace deployed to:', marketplace.address)
 
@@ -22,8 +22,7 @@ const testMint = async () => {
     console.log('owner in testMint: ', owner.address)
 
     // Mint NFT
-    await nft.mintToken(owner.address, 0, 1, '0x00')
-    await nft.setApprovalForAll(marketplace.address, true)
+    await nft.mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 0, 1, '0x00')
 
     // List NFT to Marketplace
     await marketplace.listItemForSale(nft.address, 0, 1, listPrice)
