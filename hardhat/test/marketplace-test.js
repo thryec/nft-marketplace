@@ -84,8 +84,8 @@ describe('NFT Marketplace', function () {
             await nft
                 .connect(seller2)
                 .mintToken('https://ipfs.io/ipfs/QmdkkCULcRZKQBTRLZGZnFSAwD65uL77AXPvB7rc3QVwnP', 15, '0x00')
-            await marketplace.connect(seller1).listItemForSale(nftAddress, 2, 1, listPrice)
-            await marketplace.connect(seller2).listItemForSale(nftAddress, 3, 1, listPrice)
+            await marketplace.connect(seller1).listItemsForSale(nftAddress, 2, 1, listPrice)
+            await marketplace.connect(seller2).listItemsForSale(nftAddress, 3, 1, listPrice)
         })
 
         it('Should successfully list items for sale', async () => {
@@ -97,7 +97,7 @@ describe('NFT Marketplace', function () {
         })
 
         it('Should throw an error if listPrice < 0', async () => {
-            await expect(marketplace.listItemForSale(nftAddress, 1, 2, 0)).to.be.revertedWith(
+            await expect(marketplace.listItemsForSale(nftAddress, 1, 2, 0)).to.be.revertedWith(
                 'Item price must be greater than zero'
             )
         })
@@ -146,8 +146,8 @@ describe('NFT Marketplace', function () {
         beforeEach(async () => {
             await nft.mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 5, '0x00')
             await nft.mintToken('https://ipfs.io/ipfs/QmQ35DkX8HHjhkJe5MsMAd4X51iP3MHV5d5dZoee32J83k', 10, '0x00')
-            await marketplace.listItemForSale(nftAddress, 1, 1, listPrice)
-            await marketplace.listItemForSale(nftAddress, 2, 1, listPrice)
+            await marketplace.listItemsForSale(nftAddress, 1, 1, listPrice)
+            await marketplace.listItemsForSale(nftAddress, 2, 1, listPrice)
         })
 
         it('Should allow owner of NFT to delist item', async () => {
@@ -176,8 +176,8 @@ describe('NFT Marketplace', function () {
             await nft
                 .connect(seller1)
                 .mintToken('https://ipfs.io/ipfs/QmQ35DkX8HHjhkJe5MsMAd4X51iP3MHV5d5dZoee32J83k', 5, '0x00')
-            await marketplace.connect(seller1).listItemForSale(nftAddress, 1, 8, listPrice)
-            await marketplace.connect(seller1).listItemForSale(nftAddress, 2, 4, listPrice)
+            await marketplace.connect(seller1).listItemsForSale(nftAddress, 1, 8, listPrice)
+            await marketplace.connect(seller1).listItemsForSale(nftAddress, 2, 4, listPrice)
         })
 
         it('Should fetch the correct quantity of NFTs created', async () => {

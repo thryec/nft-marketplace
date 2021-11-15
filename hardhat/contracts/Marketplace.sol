@@ -30,8 +30,6 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         address nftAddress;
         uint tokenId;
         uint itemId;
-        // uint editions; 
-        uint quantityListed;
         address creator;
         address payable seller;
         address payable owner;
@@ -45,8 +43,6 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         address indexed nftAddress,
         uint indexed tokenId,
         uint indexed itemId,
-        // uint editions, 
-        uint quantityListed,
         address creator,
         address seller,
         address owner,
@@ -56,21 +52,29 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
 
     // ------------------ Mutative Functions ---------------------- //
 
-    function listItemForSale(
+    function listItemsForSale(
         address nftAddress,
         uint _tokenId,
         uint _quantity,
         uint price
-    ) public payable nonReentrant {
+    ) public {
         require(price > 0, 'Item price must be greater than zero');
+        for (uint i = 0; i < _quantity; i++) {
+            listItem(nftAddress, _tokenId, price);
+        }
+    }
 
+    function listItem(
+        address nftAddress,
+        uint _tokenId,
+        uint price
+    ) internal nonReentrant {
         _itemIds.increment();
         uint itemId = _itemIds.current();
         itemsMapping[itemId] = Item(
             nftAddress,
             _tokenId,
             itemId,
-            _quantity,
             msg.sender,
             payable(msg.sender),
             payable(msg.sender),
@@ -78,9 +82,8 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
             true
         );
 
-        IERC1155(nftAddress).safeTransferFrom(msg.sender, address(this), _tokenId, _quantity, '0x00');
-
-        emit ItemListed(nftAddress, _tokenId, itemId, _quantity, msg.sender, msg.sender, address(0), price, true);
+        IERC1155(nftAddress).safeTransferFrom(msg.sender, address(this), _tokenId, 1, '0x00');
+        emit ItemListed(nftAddress, _tokenId, itemId, msg.sender, msg.sender, address(0), price, true);
     }
 
     function purchaseItems(
@@ -95,18 +98,13 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         require(isForSale == true, 'Item requested is not for sale.');
         require(msg.value == price, 'Please submit the correct amount of coins for desired quantity and price.');
 
-        uint royaltiesToMarketplace = (royalties * msg.value / 100);
+        uint royaltiesToMarketplace = ((royalties * msg.value) / 100);
         uint etherToSeller = msg.value - royaltiesToMarketplace;
-
-        // console.log('msgvalue: ', msg.value); 
-        // console.log('royalty %: ', royalties * msg.value); 
-        // console.log('royalties: ', royaltiesToMarketplace, 'to seller: ', etherToSeller); 
 
         IERC1155(nftAddress).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, '0x00');
         payable(marketplaceOwner).transfer(royaltiesToMarketplace);
         itemsMapping[_itemId].seller.transfer(etherToSeller);
         itemsMapping[_itemId].owner = payable(msg.sender);
-        itemsMapping[_itemId].quantityListed = itemsMapping[_itemId].quantityListed - _quantity;
         itemsMapping[_itemId].isListed = false;
     }
 

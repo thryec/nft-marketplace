@@ -22,10 +22,10 @@ const testMint = async () => {
     console.log('owner in testMint: ', owner.address)
 
     // Mint NFT
-    await nft.mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 0, 1, '0x00')
+    await nft.mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 1, '0x00')
 
     // List NFT to Marketplace
-    await marketplace.listItemForSale(nft.address, 0, 1, listPrice)
+    await marketplace.listItemsForSale(nft.address, 0, 1, listPrice)
     const item = await marketplace.getItemById(0)
     console.log('listed item: ', item)
 
