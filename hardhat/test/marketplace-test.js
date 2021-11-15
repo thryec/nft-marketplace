@@ -131,13 +131,14 @@ describe('NFT Marketplace', function () {
             const newSellerBalance = await provider.getBalance(seller1.address)
             const newBuyerBalance = await provider.getBalance(buyer1.address)
 
-            const priceInWei = ethers.utils.parseUnits('1', 'ether')
-            expect(newSellerBalance - originalSellerBalance > priceInWei).to.be.true
-            expect(originalBuyerBalance - newBuyerBalance > priceInWei * 2).to.be.true
-
             console.log('change in seller balance: ', newSellerBalance - originalSellerBalance)
             console.log('change in buyer balance: ', newBuyerBalance - originalBuyerBalance)
             console.log('change in Marketplace balance: ', newMarketplaceBalance - originalMarketplaceBalance)
+            console.log('listPrice in wei: ', listPrice.toString())
+
+            expect(newSellerBalance - originalSellerBalance > (listPrice * (1 - royalty)) / 100).to.be.true
+            expect(originalBuyerBalance - newBuyerBalance > listPrice * 2).to.be.true
+            expect(originalMarketplaceBalance - newMarketplaceBalance < listPrice * (royalty / 100) * 2).to.be.true
         })
     })
 

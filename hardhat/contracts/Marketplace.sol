@@ -30,6 +30,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         address nftAddress;
         uint tokenId;
         uint itemId;
+        // uint editions; 
         uint quantityListed;
         address creator;
         address payable seller;
@@ -44,6 +45,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         address indexed nftAddress,
         uint indexed tokenId,
         uint indexed itemId,
+        // uint editions, 
         uint quantityListed,
         address creator,
         address seller,
@@ -60,7 +62,6 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         uint _quantity,
         uint price
     ) public payable nonReentrant {
-        // require(msg.value == listingCost, 'ETH sent must equal to listing cost');
         require(price > 0, 'Item price must be greater than zero');
 
         _itemIds.increment();
@@ -90,16 +91,16 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         uint price = itemsMapping[_itemId].price;
         uint _tokenId = itemsMapping[_itemId].tokenId;
         bool isForSale = itemsMapping[_itemId].isListed;
+
         require(isForSale == true, 'Item requested is not for sale.');
         require(msg.value == price, 'Please submit the correct amount of coins for desired quantity and price.');
 
         uint royaltiesToMarketplace = (royalties * msg.value / 100);
         uint etherToSeller = msg.value - royaltiesToMarketplace;
 
-        console.log('msgvalue: ', msg.value); 
-        console.log('royalty %: ', royalties * msg.value); 
-        console.log('royalties: ', royaltiesToMarketplace, 'to seller: ', etherToSeller); 
-
+        // console.log('msgvalue: ', msg.value); 
+        // console.log('royalty %: ', royalties * msg.value); 
+        // console.log('royalties: ', royaltiesToMarketplace, 'to seller: ', etherToSeller); 
 
         IERC1155(nftAddress).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, '0x00');
         payable(marketplaceOwner).transfer(royaltiesToMarketplace);
