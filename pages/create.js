@@ -17,8 +17,8 @@ const Create = () => {
     const [itemInfo, setItemInfo] = useState({
         name: '',
         description: '',
-        price: '',
-        quantity: '',
+        price: 0,
+        quantity: 0,
     })
     const [listedItems, setListedItems] = useState([])
     const [isMinted, setIsMinted] = useState(false)
@@ -58,11 +58,10 @@ const Create = () => {
         const connection = await web3Modal.connect()
         const provider = new ethers.providers.Web3Provider(connection)
         const signer = provider.getSigner()
-        const myAddress = await signer.getAddress()
 
         const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
         console.log('starting mint.....')
-        const mintTxn = await nftContract.mintToken(url, itemInfo.quantity.toString(), '0x00')
+        const mintTxn = await nftContract.mintToken(url, itemInfo.quantity, '0x00')
         const txn = await mintTxn.wait()
         console.log('mintTxn: ', txn)
 
@@ -80,7 +79,7 @@ const Create = () => {
         const price = ethers.utils.parseUnits(itemInfo.price, 'ether')
 
         // list on marketplace
-        const listTxn = await marketplaceContract.listItemForSale(nftaddress, tokenId, 1, price)
+        const listTxn = await marketplaceContract.listItemsForSale(nftaddress, tokenId, itemInfo.quantity, price)
         await listTxn.wait()
         console.log('tokenId minted: ', tokenId)
         console.log('listing txn: ', listTxn)
@@ -107,25 +106,21 @@ const Create = () => {
                     placeholder="Item Name"
                     onChange={(e) => setItemInfo({ ...itemInfo, name: e.target.value })}
                     style={inputFields}
-                    value={itemInfo.name}
                 />
                 <textarea
                     placeholder="Item Description"
                     onChange={(e) => setItemInfo({ ...itemInfo, description: e.target.value })}
                     style={inputFields}
-                    value={itemInfo.description}
                 />
                 <input
                     placeholder="List Price"
                     onChange={(e) => setItemInfo({ ...itemInfo, price: e.target.value })}
                     style={inputFields}
-                    value={itemInfo.price}
                 />
                 <input
                     placeholder="List Quantity"
                     onChange={(e) => setItemInfo({ ...itemInfo, quantity: e.target.value })}
                     style={inputFields}
-                    value={itemInfo.quantity}
                 />
                 <input type="file" onChange={onFileUpload} style={inputFields} />
                 {isMinted ? (
