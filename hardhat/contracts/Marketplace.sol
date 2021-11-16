@@ -114,27 +114,19 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         @dev Transfer a portion of ether sent by the buyer to the marketplace as royalties. Remaining ether is transferred to the seller. 
         @param nftAddress contract address of the NFT to be purchased
         @param _itemId itemId of the NFT to be purchased 
-        @param _quantity number of NFTs to be purchased
     */
-    function purchaseItems(
-        address nftAddress,
-        uint _itemId,
-        uint _quantity
-    ) public payable nonReentrant {
+    function purchaseItem(address nftAddress, uint _itemId) public payable nonReentrant {
         uint price = itemsMapping[_itemId].price;
         uint _tokenId = itemsMapping[_itemId].tokenId;
         bool isForSale = itemsMapping[_itemId].isListed;
 
         require(isForSale == true, 'Item requested is not for sale.');
-        require(
-            msg.value == price * _quantity,
-            'Please submit the correct amount of coins for desired quantity and price.'
-        );
+        require(msg.value == price, 'Please submit the correct amount of ether.');
 
         uint royaltiesToMarketplace = ((royalties * msg.value) / 100);
         uint etherToSeller = msg.value - royaltiesToMarketplace;
 
-        IERC1155(nftAddress).safeTransferFrom(address(this), msg.sender, _tokenId, _quantity, '0x00');
+        IERC1155(nftAddress).safeTransferFrom(address(this), msg.sender, _tokenId, 1, '0x00');
         payable(marketplaceOwner).transfer(royaltiesToMarketplace);
         itemsMapping[_itemId].seller.transfer(etherToSeller);
         itemsMapping[_itemId].owner = payable(msg.sender);
@@ -163,7 +155,6 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     }
 
     // ------------------ Read Functions ---------------------- //
-
 
     function getItemPrice(uint _itemId) public view returns (uint price) {
         return itemsMapping[_itemId].price;
