@@ -13,7 +13,7 @@ const client = create('https://ipfs.infura.io:5001/api/v0')
 
 const Create = () => {
     const [fileUrl, setFileUrl] = useState('')
-    const [tokenId, setTokenId] = useState(6)
+    const [currentTokenId, setCurrentTokenId] = useState(6)
     const [itemInfo, setItemInfo] = useState({
         name: '',
         description: '',
@@ -41,7 +41,7 @@ const Create = () => {
             alert('Please do not leave any fields blank.')
             return
         }
-        setListedItems([...listedItems, { tokenId: tokenId, url: fileUrl }])
+        // setListedItems([...listedItems, { tokenId: tokenId, url: fileUrl }])
         const data = JSON.stringify({ name, description, image: fileUrl })
         try {
             const addedFile = await client.add(data)
@@ -60,11 +60,15 @@ const Create = () => {
         const signer = provider.getSigner()
 
         const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
-        console.log('starting mint.....')
+        console.log('minting.....')
         const mintTxn = await nftContract.mintToken(url, itemInfo.quantity, '0x00')
         const txn = await mintTxn.wait()
         console.log('mintTxn: ', txn)
 
+        const id = await txn.events[0].args[3]
+        console.log('tokenId: ', id)
+
+        setCurrentTokenId(id)
         setIsMinted(true)
     }
 
@@ -79,12 +83,12 @@ const Create = () => {
         const price = ethers.utils.parseUnits(itemInfo.price, 'ether')
 
         // list on marketplace
-        const listTxn = await marketplaceContract.listItemsForSale(nftaddress, tokenId, itemInfo.quantity, price)
-        await listTxn.wait()
-        console.log('tokenId minted: ', tokenId)
-        console.log('listing txn: ', listTxn)
+        console.log('listing.....')
+        const listTxn = await marketplaceContract.listItemsForSale(nftaddress, currentTokenId, itemInfo.quantity, price)
+        const txn = await listTxn.wait()
+        // console.log('tokenId minted: ', currenttokenId)
+        console.log('listing txn: ', txn)
         setFileUrl('')
-        setTokenId(tokenId + 1)
     }
 
     const fetchTokenURI = async () => {
