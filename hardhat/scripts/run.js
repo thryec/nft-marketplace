@@ -8,39 +8,33 @@ const main = async () => {
     const Marketplace = await hre.ethers.getContractFactory('Marketplace')
     marketplace = await Marketplace.deploy(5)
     await marketplace.deployed()
-    // console.log('Marketplace deployed to:', marketplace.address)
+    console.log('Marketplace deployed to:', marketplace.address)
 
     const NFT = await hre.ethers.getContractFactory('NFT')
     nft = await NFT.deploy(marketplace.address)
     await nft.deployed()
-    // console.log('NFT contract deployed to: ', nft.address)
+    console.log('NFT contract deployed to: ', nft.address)
 }
 
 const testMint = async () => {
     const [owner, buyer] = await ethers.getSigners()
-    const listPrice = 10
+    const listPrice = ethers.utils.parseUnits('10', 'ether')
     const listPriceInHex = ethers.utils.parseUnits('10', 'ether')
     // console.log('owner in testMint: ', owner.address)
-
-    const hexPrice = (quantity) => {
-        const totalCost = quantity * listPrice
-        return ethers.utils.parseUnits(totalCost.toString(), 'ether')
-    }
 
     // Mint NFT
     const mint = await nft.mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 2, '0x00')
     const txn = await mint.wait()
 
     // List NFT on Marketplace
-    await marketplace.listItemsForSale(nft.address, 1, 2, hexPrice(1))
+    await marketplace.listItemsForSale(nft.address, 1, 2, listPrice)
     const item = await marketplace.getItemById(1)
     // console.log('listed item: ', item)
 
     // Purchase NFT
-    console.log('listPrice: ', hexPrice(1).toString())
-    await marketplace.connect(buyer).purchaseItems(nft.address, 1, 2, { value: hexPrice(2) })
+    await marketplace.connect(buyer).purchaseItem(nft.address, 1, { value: listPrice })
     const buyerBalance = await nft.balanceOf(buyer.address, '1')
-    console.log('buyerBalance: ', buyerBalance)
+    // console.log('buyerBalance: ', buyerBalance)
 }
 
 const runMain = async () => {

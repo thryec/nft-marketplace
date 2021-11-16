@@ -1,2 +1,3 @@
-export const nftaddress = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
-export const marketplaceaddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+// rinkeby contract addresses
+export const nftaddress = '0x31Bc516A9383F2756FAf74dcaF56E1a662E44a89'
+export const marketplaceaddress = '0x8B3e7D04b01f20bFeD7aa7f6F362bdF24eD61277'
