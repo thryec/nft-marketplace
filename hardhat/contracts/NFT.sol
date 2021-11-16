@@ -12,14 +12,12 @@ contract NFT is ERC1155, Ownable {
     Counters.Counter private _tokenIds;
 
     /// @notice address of the Marketplace to list the NFTs on. Initialized in the constructor.
+    address public marketplaceAddress;
 
-    address marketplaceAddress;
-
-    /// @notice tokenId => token URIs
     mapping(uint => string) private _uris;
 
     /// @notice initializes marketplace address to be used for setting approvals to allow marketplace to list the tokens.
-    constructor(address marketAddress) ERC1155() {
+    constructor(address marketAddress) ERC1155('VastOcean') {
         marketplaceAddress = marketAddress;
     }
 
@@ -29,8 +27,8 @@ contract NFT is ERC1155, Ownable {
         @notice Mints ERC1155 tokens to the caller's wallet. 
         @dev Sets approval for the marketplace address to allows listings, and sets the tokenURI in the _uris mapping. 
         @param tokenURI metadata of the NFT to be minted 
-        @param _quantity number of NFTs to be minted 
-        @return tokenId of the NFT minted 
+        @param quantity number of NFTs to be minted 
+        @return _tokenId of the NFT minted 
     */
     function mintToken(
         string memory tokenURI,
@@ -50,7 +48,7 @@ contract NFT is ERC1155, Ownable {
     /**
         @notice Sets the token URI in the mapping for each NFT when minted.
         @dev Called by the mintToken function. Limits the URI for each token to 1. 
-        @param tokenId token whose URI is to be set 
+        @param _tokenId token whose URI is to be set 
         @param newURI URI to add for this tokenId 
     */
     function setTokenURI(uint _tokenId, string memory newURI) public {

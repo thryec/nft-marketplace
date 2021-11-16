@@ -19,12 +19,11 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         @notice Royalties are charged as a percentage of an item's sale price. 
         @dev This value is to be defined in the constructor upon deployment and will accept integers between 0 - 100.
      */
-    uint royalties;
+    uint public royalties;
 
     /// @dev owner of the marketplace declared as msg.sender in the constructor.
     address payable marketplaceOwner;
 
-    /// @notice itemId => Item struct
     mapping(uint => Item) private itemsMapping;
 
     /// @notice Sets the owner of the Marketplace contract as the contract deployer, and initializes proportion of royalties that will go to the marketplace.

@@ -193,6 +193,8 @@ describe('NFT Marketplace', function () {
             console.log('newSeller1Tokens: ', newSeller1Tokens.length)
             console.log('buyer1Owned: ', buyer1Owned.length)
             console.log('buyer2Owned: ', buyer2Owned.length)
+            expect(buyer1Owned.length).to.equal(2)
+            expect(buyer2Owned.length).to.equal(2)
         })
     })
 })
