@@ -26,10 +26,10 @@ const myGallery = () => {
         const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
 
         const data = await marketplaceContract.getItemsOwned()
-        // console.log('my items: ', data)
 
         const items = await Promise.all(
             data.map(async (el) => {
+                // console.log(el)
                 const tokenURI = await nftContract.getTokenURI(el.tokenId)
                 const res = await fetch(tokenURI)
                 const data = await res.json()
@@ -41,6 +41,8 @@ const myGallery = () => {
                     owner: el.owner,
                     listed: el.isListed,
                     image: data.image,
+                    name: data.name,
+                    description: data.description,
                 }
                 return item
             })
@@ -55,7 +57,7 @@ const myGallery = () => {
                 <CardMedia component="img" height="140" image={el.image} alt="green iguana" />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
-                        Lizard
+                        {el.name}
                     </Typography>
                 </CardContent>
                 <CardActions>
