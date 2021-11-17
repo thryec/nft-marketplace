@@ -17,27 +17,26 @@ const Home = () => {
     const [isLoaded, setIsLoaded] = useState(false)
 
     const fetchListedNFTs = async () => {
-        const web3modal = new Web3Modal()
-        const connection = await web3modal.connect()
-        const provider = new ethers.providers.Web3Provider(connection)
-        const signer = provider.getSigner()
-
-        const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
-        const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
+        const provider = new ethers.providers.JsonRpcProvider(
+            'https://eth-rinkeby.alchemyapi.io/v2/3oLAthVbgYWuW57KqOR_HQaglc7jDAfZ'
+        )
+        const nftContract = new ethers.Contract(nftaddress, NFT.abi, provider)
+        const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, provider)
 
         const data = await marketplaceContract.getListedItems()
 
         const items = await Promise.all(
             data.map(async (el) => {
-                console.log(el)
+                // console.log(el)
                 const tokenURI = await nftContract.getTokenURI(el.tokenId)
                 const res = await fetch(tokenURI)
                 const data = await res.json()
-                console.log(data)
+                // console.log(data)
                 let price = ethers.utils.formatUnits(el.price.toString(), 'ether')
                 let item = {
                     price,
                     tokenId: el.tokenId.toNumber(),
+                    itemId: el.itemId.toNumber(),
                     seller: el.seller,
                     owner: el.owner,
                     listed: el.isListed,
@@ -52,18 +51,33 @@ const Home = () => {
         setIsLoaded(true)
     }
 
+    const buyNFT = async (el) => {
+        const web3modal = new Web3Modal()
+        const connection = await web3modal.connect()
+        const provider = new ethers.providers.Web3Provider(connection)
+        const signer = provider.getSigner()
+        const contract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
+        const price = ethers.utils.parseUnits(el.price.toString(), 'ether')
+
+        console.log('buying.... ', el)
+        const txn = await contract.purchaseItem(nftaddress, el.itemId, { value: price })
+        const receipt = await txn.wait()
+        console.log('item purchased: ', receipt)
+    }
+
     const renderNFTs = listedNFTs.map((el, i) => {
         return (
             <Card sx={{ maxWidth: 345 }} key={i}>
-                <CardMedia component="img" height="140" image={el.image} alt="green iguana" />
+                <CardMedia component="img" height="300" image={el.image} alt="green iguana" />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                         {el.name}
                     </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button size="small">Share</Button>
-                    <Button size="small">Learn More</Button>
+                    <Button onClick={() => buyNFT(el)} size="small">
+                        Buy
+                    </Button>
                 </CardActions>
             </Card>
         )
@@ -80,7 +94,7 @@ const Home = () => {
             </Stack>
         </div>
     ) : (
-        <div style={bodyStyle}>No Assets Listed</div>
+        <div style={bodyStyle}>Loading....</div>
     )
 }
 

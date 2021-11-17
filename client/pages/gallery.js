@@ -54,7 +54,7 @@ const myGallery = () => {
     const renderNFTs = myNFTs.map((el, i) => {
         return (
             <Card sx={{ maxWidth: 345 }} key={i}>
-                <CardMedia component="img" height="140" image={el.image} alt="green iguana" />
+                <CardMedia component="img" height="300" image={el.image} alt="green iguana" />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                         {el.name}
@@ -81,9 +81,9 @@ const myGallery = () => {
         console.log(myNFTs)
     }
 
-    useEffect(() => {
-        fetchMyNFTs()
-    }, [])
+    // useEffect(() => {
+    //     fetchMyNFTs()
+    // }, [])
 
     return isLoaded ? (
         <div style={bodyStyle}>
@@ -93,7 +93,11 @@ const myGallery = () => {
             </Stack>
         </div>
     ) : (
-        <div style={bodyStyle}>No Assets Owned</div>
+        <div style={bodyStyle}>
+            <Button onClick={fetchMyNFTs} variant="contained">
+                Connect Wallet
+            </Button>
+        </div>
     )
 }
 const bodyStyle = {

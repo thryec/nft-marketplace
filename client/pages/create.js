@@ -20,7 +20,6 @@ const Create = () => {
         price: '',
         quantity: '',
     })
-    const [listedItems, setListedItems] = useState([])
     const [isMinted, setIsMinted] = useState(false)
     // const router = useRouter()
 
@@ -41,7 +40,6 @@ const Create = () => {
             alert('Please do not leave any fields blank.')
             return
         }
-        // setListedItems([...listedItems, { tokenId: tokenId, url: fileUrl }])
         const data = JSON.stringify({ name, description, image: fileUrl })
         try {
             const addedFile = await client.add(data)
@@ -97,17 +95,6 @@ const Create = () => {
         })
     }
 
-    const fetchTokenURI = async () => {
-        const web3Modal = new Web3Modal()
-        const connection = await web3Modal.connect()
-        const provider = new ethers.providers.Web3Provider(connection)
-        const signer = provider.getSigner()
-
-        const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
-        const img = await nftContract.getTokenURI(5)
-        console.log('token URI: ', img)
-    }
-
     return (
         <div style={bodyStyle}>
             <h2>Upload Your Creation Here</h2>
@@ -152,9 +139,6 @@ const Create = () => {
                         </Button>
                     </Stack>
                 )}
-                <div>
-                    <button onClick={fetchTokenURI}>Fetch Token URI</button>
-                </div>
                 <hr />
                 {fileUrl && <img src={fileUrl} width="800px" />}
             </div>
