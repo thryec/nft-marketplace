@@ -17,8 +17,8 @@ const Create = () => {
     const [itemInfo, setItemInfo] = useState({
         name: '',
         description: '',
-        price: 0,
-        quantity: 0,
+        price: '',
+        quantity: '',
     })
     const [listedItems, setListedItems] = useState([])
     const [isMinted, setIsMinted] = useState(false)
@@ -89,6 +89,12 @@ const Create = () => {
         // console.log('tokenId minted: ', currenttokenId)
         console.log('listing txn: ', txn)
         setFileUrl('')
+        setItemInfo({
+            name: '',
+            description: '',
+            price: '',
+            quantity: '',
+        })
     }
 
     const fetchTokenURI = async () => {
