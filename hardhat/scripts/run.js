@@ -31,6 +31,9 @@ const testMint = async () => {
     const item = await marketplace.getItemById(1)
     // console.log('listed item: ', item)
 
+    const listed = await marketplace.connect(buyer).getListedItems()
+    console.log('listed items: ', listed)
+
     // Purchase NFT
     await marketplace.connect(buyer).purchaseItem(nft.address, 1, { value: listPrice })
     const buyerBalance = await nft.balanceOf(buyer.address, '1')

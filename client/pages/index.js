@@ -26,7 +26,6 @@ const Home = () => {
         const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, provider)
 
         const data = await marketplaceContract.getListedItems()
-
         const items = await Promise.all(
             data.map(async (el) => {
                 // console.log(el)

@@ -15,11 +15,6 @@ describe('NFT Marketplace', function () {
     let royalty = 5
     const provider = ethers.provider
 
-    // const hexPrice = (quantity) => {
-    //     const totalCost = quantity * listPrice
-    //     return ethers.utils.parseUnits(totalCost.toString(), 'ether')
-    // }
-
     beforeEach(async () => {
         ;[contractOwner, seller1, seller2, buyer1, buyer2] = await ethers.getSigners()
 
