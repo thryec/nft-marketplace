@@ -10,6 +10,8 @@ import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
+import LinearProgress from '@mui/material/LinearProgress'
+import CircularProgress from '@mui/material/CircularProgress'
 
 const client = create('https://ipfs.infura.io:5001/api/v0')
 
@@ -23,14 +25,17 @@ const Create = () => {
         quantity: '',
     })
     const [isMinted, setIsMinted] = useState(false)
-    // const router = useRouter()
+    const [fileUploading, setFileUploading] = useState(false)
+    const router = useRouter()
 
     const onFileUpload = async (e) => {
+        setFileUploading(true)
         const file = e.target.files[0]
         try {
             const addedFile = await client.add(file)
             const url = `https://ipfs.infura.io/ipfs/${addedFile.path}`
             setFileUrl(url)
+            setFileUploading(false)
         } catch (e) {
             console.log('Error uploading file: ', e)
         }
@@ -78,7 +83,6 @@ const Create = () => {
         const provider = new ethers.providers.Web3Provider(connection)
         const signer = provider.getSigner()
 
-        // const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
         const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
         const price = ethers.utils.parseUnits(itemInfo.price, 'ether')
 
@@ -94,6 +98,7 @@ const Create = () => {
             price: '',
             quantity: '',
         })
+        router.push('/')
     }
 
     return (
@@ -122,29 +127,34 @@ const Create = () => {
                         onChange={(e) => setItemInfo({ ...itemInfo, quantity: e.target.value })}
                     />
                 </Box>
-                <input type="file" onChange={onFileUpload} style={{ margin: '20px auto' }} />
+                <Button variant="outlined" component="label" style={{ margin: '20px auto' }}>
+                    Upload File
+                    <input type="file" hidden onChange={onFileUpload} />
+                </Button>
                 {isMinted ? (
                     <Stack spacing={2} direction="row">
                         <Button onClick={createSaleItem} variant="contained" disabled>
-                            Mint NFT
+                            Mint Tokens
                         </Button>
                         <Button onClick={listOnMarketplace} variant="contained">
-                            List NFT
+                            List Tokens
                         </Button>
                     </Stack>
                 ) : (
                     <Stack spacing={5} direction="row" style={{ marginBottom: '20px' }}>
                         <Button onClick={createSaleItem} variant="contained">
-                            Mint NFT
+                            Mint Tokens
                         </Button>
                         <Button onClick={listOnMarketplace} variant="contained" disabled>
-                            List NFT
+                            List Tokens
                         </Button>
                     </Stack>
                 )}
             </div>
             <hr />
-            <div> {fileUrl && <img src={fileUrl} width="800px" />}</div>
+            <div style={{ margin: '20px' }}>
+                {fileUploading ? <LinearProgress sx={{ width: '80%' }} /> : <img src={fileUrl} width="800px" />}{' '}
+            </div>
         </div>
     )
 }
