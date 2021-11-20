@@ -21,7 +21,7 @@ Users can view all the NFTs they have minted, bought, and sold on the platform.
 A percentage of the sale price will go to the marketplace contract whenever a sale occurs. The amount of royalties is declared in the constructor when deploying the marketplace contract. 
 
 
-## Technologies Used
+## Technologies & Dependencies 
 
 - Hardhat as the Solidity development framework
 - ethers.js for interacting with the Ethereum blockchain and its ecosystem
