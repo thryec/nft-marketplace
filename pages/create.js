@@ -8,6 +8,8 @@ import NFT from '../../hardhat/artifacts/contracts/NFT.sol/NFT.json'
 import Market from '../../hardhat/artifacts/contracts/Marketplace.sol/Marketplace.json'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+import Box from '@mui/material/Box'
 
 const client = create('https://ipfs.infura.io:5001/api/v0')
 
@@ -76,15 +78,14 @@ const Create = () => {
         const provider = new ethers.providers.Web3Provider(connection)
         const signer = provider.getSigner()
 
-        const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
+        // const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
         const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
         const price = ethers.utils.parseUnits(itemInfo.price, 'ether')
 
-        // list on marketplace
         console.log('listing.....')
         const listTxn = await marketplaceContract.listItemsForSale(nftaddress, currentTokenId, itemInfo.quantity, price)
         const txn = await listTxn.wait()
-        // console.log('tokenId minted: ', currenttokenId)
+
         console.log('listing txn: ', txn)
         setFileUrl('')
         setItemInfo({
@@ -97,66 +98,63 @@ const Create = () => {
 
     return (
         <div style={bodyStyle}>
-            <h2>Upload Your Creation Here</h2>
-            <div style={inputStyle}>
-                <input
-                    placeholder="Item Name"
-                    onChange={(e) => setItemInfo({ ...itemInfo, name: e.target.value })}
-                    style={inputFields}
-                />
-                <textarea
-                    placeholder="Item Description"
-                    onChange={(e) => setItemInfo({ ...itemInfo, description: e.target.value })}
-                    style={inputFields}
-                />
-                <input
-                    placeholder="List Price"
-                    onChange={(e) => setItemInfo({ ...itemInfo, price: e.target.value })}
-                    style={inputFields}
-                />
-                <input
-                    placeholder="List Quantity"
-                    onChange={(e) => setItemInfo({ ...itemInfo, quantity: e.target.value })}
-                    style={inputFields}
-                />
-                <input type="file" onChange={onFileUpload} style={inputFields} />
+            <div>
+                <h2>Mint Your Creation Here</h2>
+                <Box
+                    component="form"
+                    autoComplete="off"
+                    m="auto"
+                    sx={{
+                        '& .MuiTextField-root': { m: 1, width: '60ch' },
+                    }}
+                >
+                    <TextField onChange={(e) => setItemInfo({ ...itemInfo, name: e.target.value })} label="Item Name" />
+                    <TextField
+                        onChange={(e) => setItemInfo({ ...itemInfo, description: e.target.value })}
+                        label="Item Description"
+                    />
+                    <TextField
+                        label="List Price"
+                        onChange={(e) => setItemInfo({ ...itemInfo, price: e.target.value })}
+                    />
+                    <TextField
+                        label="List Quantity"
+                        onChange={(e) => setItemInfo({ ...itemInfo, quantity: e.target.value })}
+                    />
+                </Box>
+                <input type="file" onChange={onFileUpload} style={{ margin: '20px auto' }} />
                 {isMinted ? (
                     <Stack spacing={2} direction="row">
-                        <Button onClick={createSaleItem} style={inputFields} variant="contained" disabled>
+                        <Button onClick={createSaleItem} variant="contained" disabled>
                             Mint NFT
                         </Button>
-                        <Button onClick={listOnMarketplace} style={inputFields} variant="contained">
+                        <Button onClick={listOnMarketplace} variant="contained">
                             List NFT
                         </Button>
                     </Stack>
                 ) : (
-                    <Stack spacing={2} direction="row">
-                        <Button onClick={createSaleItem} style={inputFields} variant="contained">
+                    <Stack spacing={5} direction="row" style={{ marginBottom: '20px' }}>
+                        <Button onClick={createSaleItem} variant="contained">
                             Mint NFT
                         </Button>
-                        <Button onClick={listOnMarketplace} style={inputFields} variant="contained" disabled>
+                        <Button onClick={listOnMarketplace} variant="contained" disabled>
                             List NFT
                         </Button>
                     </Stack>
                 )}
-                <hr />
-                {fileUrl && <img src={fileUrl} width="800px" />}
             </div>
+            <hr />
+            <div> {fileUrl && <img src={fileUrl} width="800px" />}</div>
         </div>
     )
 }
 
 const bodyStyle = {
-    margin: 40,
-}
-const inputStyle = {
-    display: 'flexbox',
+    margin: 70,
 }
 
-const inputFields = {
-    width: '750px',
-    marginTop: 10,
-    marginBottom: 10,
+const inputField = {
+    width: 100,
 }
 
 export default Create
