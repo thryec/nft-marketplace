@@ -1,5 +1,6 @@
 import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/dist/client/router'
 import Web3Modal from 'web3modal'
 import { nftaddress, marketplaceaddress } from '../../config'
 import NFT from '../../hardhat/artifacts/contracts/NFT.sol/NFT.json'
@@ -15,6 +16,7 @@ import Typography from '@mui/material/Typography'
 const Home = () => {
     const [listedNFTs, setListedNFTs] = useState([])
     const [isLoaded, setIsLoaded] = useState(false)
+    const router = useRouter()
 
     const fetchListedNFTs = async () => {
         const provider = new ethers.providers.JsonRpcProvider(
@@ -63,20 +65,24 @@ const Home = () => {
         const txn = await contract.purchaseItem(nftaddress, el.itemId, { value: price })
         const receipt = await txn.wait()
         console.log('item purchased: ', receipt)
+        router.push('/gallery')
     }
 
     const renderNFTs = listedNFTs.map((el, i) => {
         return (
-            <Card sx={{ maxWidth: 345 }} key={i}>
+            <Card sx={{ width: 275 }} key={i}>
                 <CardMedia component="img" height="300" image={el.image} alt="green iguana" />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                         {el.name}
                     </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {el.description}
+                    </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button onClick={() => buyNFT(el)} size="small">
-                        Buy
+                    <Button onClick={() => buyNFT(el)} size="small" variant="outlined">
+                        Purchase
                     </Button>
                 </CardActions>
             </Card>

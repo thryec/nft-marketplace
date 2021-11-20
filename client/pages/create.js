@@ -17,7 +17,7 @@ const client = create('https://ipfs.infura.io:5001/api/v0')
 
 const Create = () => {
     const [fileUrl, setFileUrl] = useState('')
-    const [currentTokenId, setCurrentTokenId] = useState(6)
+    const [currentTokenId, setCurrentTokenId] = useState(0)
     const [itemInfo, setItemInfo] = useState({
         name: '',
         description: '',
@@ -26,6 +26,7 @@ const Create = () => {
     })
     const [isMinted, setIsMinted] = useState(false)
     const [fileUploading, setFileUploading] = useState(false)
+    const [isPending, setIsPending] = useState(false)
     const router = useRouter()
 
     const onFileUpload = async (e) => {
@@ -59,6 +60,7 @@ const Create = () => {
     }
 
     const mintNFT = async (url) => {
+        setIsPending(true)
         const web3Modal = new Web3Modal()
         const connection = await web3Modal.connect()
         const provider = new ethers.providers.Web3Provider(connection)
@@ -75,9 +77,11 @@ const Create = () => {
 
         setCurrentTokenId(id)
         setIsMinted(true)
+        setIsPending(false)
     }
 
     const listOnMarketplace = async (url) => {
+        setIsPending(true)
         const web3Modal = new Web3Modal()
         const connection = await web3Modal.connect()
         const provider = new ethers.providers.Web3Provider(connection)
@@ -98,6 +102,7 @@ const Create = () => {
             price: '',
             quantity: '',
         })
+        setIsPending(false)
         router.push('/')
     }
 
@@ -151,9 +156,15 @@ const Create = () => {
                     </Stack>
                 )}
             </div>
+            {isPending && (
+                <div>
+                    <p>Please wait while your transaction is being mined...</p>
+                    <CircularProgress />
+                </div>
+            )}
             <hr />
             <div style={{ margin: '20px' }}>
-                {fileUploading ? <LinearProgress sx={{ width: '80%' }} /> : <img src={fileUrl} width="800px" />}{' '}
+                {fileUploading ? <LinearProgress sx={{ width: '80%' }} /> : <img src={fileUrl} width="800px" />}
             </div>
         </div>
     )
@@ -161,10 +172,6 @@ const Create = () => {
 
 const bodyStyle = {
     margin: 70,
-}
-
-const inputField = {
-    width: 100,
 }
 
 export default Create

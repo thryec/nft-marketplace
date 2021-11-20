@@ -29,7 +29,6 @@ const myGallery = () => {
 
         const items = await Promise.all(
             data.map(async (el) => {
-                // console.log(el)
                 const tokenURI = await nftContract.getTokenURI(el.tokenId)
                 const res = await fetch(tokenURI)
                 const data = await res.json()
@@ -53,16 +52,18 @@ const myGallery = () => {
 
     const renderNFTs = myNFTs.map((el, i) => {
         return (
-            <Card sx={{ maxWidth: 345 }} key={i}>
+            <Card sx={{ width: 275 }} key={i}>
                 <CardMedia component="img" height="300" image={el.image} alt="green iguana" />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                         {el.name}
                     </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {el.description}
+                    </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button size="small">Share</Button>
-                    <Button size="small">Learn More</Button>
+                    <Button size="small">List For Sale</Button>
                 </CardActions>
             </Card>
         )
@@ -87,7 +88,6 @@ const myGallery = () => {
 
     return isLoaded ? (
         <div style={bodyStyle}>
-            <Button onClick={showItems}>log items</Button>
             <Stack direction="row" spacing={2}>
                 {renderNFTs}
             </Stack>
