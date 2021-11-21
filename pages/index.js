@@ -80,9 +80,12 @@ const Home = () => {
                     </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button onClick={() => buyNFT(el)} size="small" variant="outlined">
-                        Purchase
-                    </Button>
+                    <Stack direction="row" spacing={5}>
+                        <Button onClick={() => buyNFT(el)} size="small" variant="outlined">
+                            Purchase
+                        </Button>
+                        <Typography variant="h5">{el.price} ETH</Typography>
+                    </Stack>
                 </CardActions>
             </Card>
         )
