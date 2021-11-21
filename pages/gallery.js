@@ -12,10 +12,13 @@ import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import Modal from '@mui/material/Modal'
+import Box from '@mui/material/Box'
 
 const myGallery = () => {
     const [myNFTs, setMyNFTs] = useState([])
     const [isLoaded, setIsLoaded] = useState(false)
+    const [modalActive, setModalActive] = useState(false)
     const router = useRouter()
 
     const fetchMyNFTs = async () => {
@@ -54,14 +57,15 @@ const myGallery = () => {
     }
 
     const listItem = async (itemId) => {
-        const web3modal = new Web3Modal()
-        const connection = await web3modal.connect()
-        const provider = new ethers.providers.Web3Provider(connection)
-        const signer = provider.getSigner()
+        // const web3modal = new Web3Modal()
+        // const connection = await web3modal.connect()
+        // const provider = new ethers.providers.Web3Provider(connection)
+        // const signer = provider.getSigner()
 
-        const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
+        // const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
 
         console.log('listing item with itemId: ', itemId)
+        setModalActive(true)
     }
 
     const burnItem = async (tokenId) => {
@@ -101,14 +105,23 @@ const myGallery = () => {
                     >
                         Sell
                     </Button>
-                    {/* <Button
-                        onClick={() => {
-                            burnItem(el.tokenId)
+                    <Modal
+                        open={modalActive}
+                        onClose={() => {
+                            setModalActive(false)
                         }}
-                        size="small"
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
                     >
-                        Burn
-                    </Button> */}
+                        <Box sx={modalStyle}>
+                            <Typography id="modal-modal-title" variant="h6" component="h2">
+                                Text in a modal
+                            </Typography>
+                            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                            </Typography>
+                        </Box>
+                    </Modal>
                 </CardActions>
             </Card>
         )
@@ -141,6 +154,21 @@ const myGallery = () => {
         </div>
     )
 }
+
+const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 700,
+    height: 500,
+    bgcolor: 'background.paper',
+    border: '2px solid #aaa',
+    borderRadius: '5%',
+    boxShadow: 24,
+    p: 4,
+}
+
 const bodyStyle = {
     margin: 40,
 }
