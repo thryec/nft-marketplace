@@ -1,6 +1,6 @@
 # NFT Marketplace
 
-A simple Ethereum-based NFT Marketplace that allows users to mint ERC1155 tokens, view items in the marketplace, and buy/sell NFTs with other Ethereum accounts.
+A simple Ethereum-based NFT Marketplace that allows users to mint NFTs, list them on the marketplace, and buy/sell NFTs with other Ethereum accounts.
 
 ## Running this project locally:
 
@@ -15,7 +15,7 @@ A simple Ethereum-based NFT Marketplace that allows users to mint ERC1155 tokens
 
 #### Frontend
 
-`cd client`
+-   `cd client`
 
 ## Features
 
