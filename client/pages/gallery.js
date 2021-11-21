@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
 import Web3Modal from 'web3modal'
+import { useRouter } from 'next/dist/client/router'
 import { nftaddress, marketplaceaddress } from '../../config'
 import NFT from '../../hardhat/artifacts/contracts/NFT.sol/NFT.json'
 import Market from '../../hardhat/artifacts/contracts/Marketplace.sol/Marketplace.json'
@@ -15,6 +16,7 @@ import Typography from '@mui/material/Typography'
 const myGallery = () => {
     const [myNFTs, setMyNFTs] = useState([])
     const [isLoaded, setIsLoaded] = useState(false)
+    const router = useRouter()
 
     const fetchMyNFTs = async () => {
         const web3modal = new Web3Modal()
@@ -36,6 +38,7 @@ const myGallery = () => {
                 let item = {
                     price,
                     tokenId: el.tokenId.toNumber(),
+                    itemId: el.itemId.toNumber(),
                     seller: el.seller,
                     owner: el.owner,
                     listed: el.isListed,
@@ -48,6 +51,33 @@ const myGallery = () => {
         )
         setMyNFTs(items)
         setIsLoaded(true)
+    }
+
+    const listItem = async (itemId) => {
+        const web3modal = new Web3Modal()
+        const connection = await web3modal.connect()
+        const provider = new ethers.providers.Web3Provider(connection)
+        const signer = provider.getSigner()
+
+        const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
+
+        console.log('listing item with itemId: ', itemId)
+    }
+
+    const burnItem = async (tokenId) => {
+        const web3modal = new Web3Modal()
+        const connection = await web3modal.connect()
+        const provider = new ethers.providers.Web3Provider(connection)
+        const signer = provider.getSigner()
+
+        const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
+        const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
+
+        console.log('burning token with id ', tokenId)
+        const burn = await nftContract.burnTokens(tokenId, 1)
+        const txn = await burn.wait()
+        console.log('token burned, txn receipt: ', txn)
+        router.push('/gallery')
     }
 
     const renderNFTs = myNFTs.map((el, i) => {
@@ -63,7 +93,22 @@ const myGallery = () => {
                     </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button size="small">List For Sale</Button>
+                    <Button
+                        onClick={() => {
+                            listItem(el.tokenId)
+                        }}
+                        size="small"
+                    >
+                        Sell
+                    </Button>
+                    {/* <Button
+                        onClick={() => {
+                            burnItem(el.tokenId)
+                        }}
+                        size="small"
+                    >
+                        Burn
+                    </Button> */}
                 </CardActions>
             </Card>
         )
@@ -77,10 +122,6 @@ const myGallery = () => {
             </div>
         )
     })
-
-    const showItems = () => {
-        console.log(myNFTs)
-    }
 
     // useEffect(() => {
     //     fetchMyNFTs()

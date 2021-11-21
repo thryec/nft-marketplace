@@ -195,4 +195,19 @@ describe('NFT Marketplace', function () {
             expect(buyer2Owned.length).to.equal(buyer2Tokens)
         })
     })
+
+    describe('Burning Items', async () => {
+        beforeEach(async () => {
+            await nft
+                .connect(seller1)
+                .mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 10, '0x00')
+            await nft
+                .connect(seller1)
+                .mintToken('https://ipfs.io/ipfs/QmQ35DkX8HHjhkJe5MsMAd4X51iP3MHV5d5dZoee32J83k', 5, '0x00')
+            await marketplace.connect(seller1).listItemsForSale(nftAddress, 1, 2, listPrice)
+            await marketplace.connect(seller1).listItemsForSale(nftAddress, 2, 2, listPrice)
+        })
+
+        it('Should burn tokens and remove it from the marketplace', async () => {})
+    })
 })

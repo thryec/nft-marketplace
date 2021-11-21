@@ -2,6 +2,21 @@
 
 A simple Ethereum-based NFT Marketplace that allows users to mint ERC1155 tokens, view items in the marketplace, and buy/sell NFTs with other Ethereum accounts.
 
+## Running this project locally:
+
+#### Prerequisites
+
+-   Node.js >= v14.0
+-   Hardhat
+
+#### Contracts
+
+-   `cd hardhat`
+
+#### Frontend
+
+`cd client`
+
 ## Features
 
 1. Mint
@@ -16,18 +31,16 @@ Any item that an account mints will be automatically listed and can be bought by
 
 Users can view all the NFTs they have minted, bought, and sold on the platform.
 
-4. Royalties 
+4. Royalties
 
-A percentage of the sale price will go to the marketplace contract whenever a sale occurs. The amount of royalties is declared in the constructor when deploying the marketplace contract. 
+A percentage of the sale price will go to the marketplace contract whenever a sale occurs. The amount of royalties is declared in the constructor when deploying the marketplace contract.
 
+## Dependencies
 
-## Technologies & Dependencies 
-
-- Hardhat as the Solidity development framework
-- ethers.js for interacting with the Ethereum blockchain and its ecosystem
-- Chai for testing smart contracts
-- React.js to organize and display values on the frontend
-- IPFS to store NFT metadata
-- Web3Modal for connecting to user's Ethereum wallet 
-
-
+-   Hardhat
+-   ethers.js
+-   Chai
+-   React.js
+-   IPFS
+-   Web3Modal
+-   dotenv
