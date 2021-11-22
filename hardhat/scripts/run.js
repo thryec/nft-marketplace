@@ -20,7 +20,6 @@ const testMint = async () => {
     const [owner, buyer] = await ethers.getSigners()
     const listPrice = ethers.utils.parseUnits('10', 'ether')
     const listPriceInHex = ethers.utils.parseUnits('10', 'ether')
-    // console.log('owner in testMint: ', owner.address)
 
     // Mint NFT
     const mint = await nft.mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 2, '0x00')
@@ -29,15 +28,12 @@ const testMint = async () => {
     // List NFT on Marketplace
     await marketplace.listItemsForSale(nft.address, 1, 2, listPrice)
     const item = await marketplace.getItemById(1)
-    // console.log('listed item: ', item)
 
     const listed = await marketplace.connect(buyer).getListedItems()
-    console.log('listed items: ', listed)
 
     // Purchase NFT
     await marketplace.connect(buyer).purchaseItem(nft.address, 1, { value: listPrice })
     const buyerBalance = await nft.balanceOf(buyer.address, '1')
-    // console.log('buyerBalance: ', buyerBalance)
 }
 
 const runMain = async () => {
