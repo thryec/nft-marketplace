@@ -141,9 +141,9 @@ describe('NFT Marketplace', function () {
         })
 
         it('Should allow owner of NFT to delist item', async () => {
-            const originalListedItems = await marketplace.getListedItems()
+            const originalListedItems = await marketplace.connect(seller1).getListedItems()
             await marketplace.delistItem(1)
-            const newListedItems = await marketplace.getListedItems()
+            const newListedItems = await marketplace.connect(seller1).getListedItems()
             expect(originalListedItems.length - newListedItems.length).to.equal(1)
         })
 
