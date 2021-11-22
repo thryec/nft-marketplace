@@ -145,6 +145,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         @param _itemId itemId of the NFT to be delisted
     */
     function delistItem(uint _itemId) public {
+        require(itemsMapping[_itemId].isListed == true, 'Item not listed yet'); 
         address itemOwner = itemsMapping[_itemId].owner;
         require(msg.sender == itemOwner, 'msg sender is not owner of item');
         itemsMapping[_itemId].isListed = false;
@@ -155,9 +156,11 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         @dev Requires the caller to be the owner of the item. Sets the 'isListed' property of the item in the mapping to true. 
         @param _itemId itemId of the NFT to be relisted
     */
-    function relistItem(uint _itemId) public {
+    function relistItem(uint _itemId, uint listPrice) public {
+        require(itemsMapping[_itemId].isListed == false, 'Item is already listed'); 
         require(msg.sender == itemsMapping[_itemId].owner, 'msg sender is not owner of item');
         itemsMapping[_itemId].isListed = true;
+        itemsMapping[_itemId].price = listPrice; 
     }
 
     // ------------------ Read Functions ---------------------- //

@@ -19,9 +19,7 @@ const Home = () => {
     const router = useRouter()
 
     const fetchListedNFTs = async () => {
-        const provider = new ethers.providers.JsonRpcProvider(
-            'https://eth-rinkeby.alchemyapi.io/v2/3oLAthVbgYWuW57KqOR_HQaglc7jDAfZ'
-        )
+        const provider = new ethers.providers.JsonRpcProvider('https://eth-rinkeby.alchemyapi.io/v2/3oLAthVbgYWuW57KqOR_HQaglc7jDAfZ')
         const nftContract = new ethers.Contract(nftaddress, NFT.abi, provider)
         const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, provider)
 
@@ -84,7 +82,7 @@ const Home = () => {
                         <Button onClick={() => buyNFT(el)} size="small" variant="outlined">
                             Purchase
                         </Button>
-                        <Typography variant="h5">{el.price} ETH</Typography>
+                        <Typography variant="h6">{el.price} ETH</Typography>
                     </Stack>
                 </CardActions>
             </Card>

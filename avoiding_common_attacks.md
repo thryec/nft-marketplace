@@ -2,7 +2,7 @@
 
 ### Guarding Against Solidity Risks
 
--   Using Solidity >= v0.8.0 that has SafeMath integrated to ensure automatic reverts for integer overflows. This feature is applied in the `purchaseItem` function in `Marketplace.sol` when calculating the amount of royalties that goes to the contract, and the remaining that goes to the seller of the item.
+-   (SWC-101) Using Solidity >= v0.8.0 that has SafeMath integrated to ensure automatic reverts for integer overflows. This feature is applied in the `purchaseItem` function in `Marketplace.sol` when calculating the amount of royalties that goes to the contract, and the remaining that goes to the seller of the item.
 
 -   Use of Require to ensure:
 
@@ -12,9 +12,9 @@
     -   Only the owner of an item is allowed to delist/relist it on the marketplace
     -   Only the owner of the ERC1155 token is allowed to call the setTokenURI function
 
--   Using `.call` instead of `.transfer` to send Ether in the `purchaseItem` function
+-   (SWC-111) Using `.call` instead of `.transfer` to send Ether in the `purchaseItem` function
 -   Implemented Checks-Effects-Interactions to ensure external calls/transfer of Ether happen at the end of each function and after any necessary state changes have been made.
 
 ### Guarding Against Smart Contract Risks
 
--   Reentrancy Guard: nonReentrant modifier used in the `purchaseItem` function to prevent multiple calls from external caller draining the smart contract when it is exposed during the .call() function.
+-   (SWC-107) Reentrancy Guard: nonReentrant modifier used in the `purchaseItem` function to prevent multiple calls from external caller draining the smart contract when it is exposed during the .call() function.

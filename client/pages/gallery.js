@@ -69,14 +69,15 @@ const myGallery = () => {
 
             const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
             const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
-            console.log(signer)
-            const balance = await nftContract.balanceOf(signer.address, nft.tokenId)
-            console.log('signer token balance: ', balance)
+            // console.log(signer)
+            // const balance = await nftContract.balanceOf(signer.address, nft.tokenId)
+            // console.log('signer token balance: ', balance)
 
-            // console.log('listing token with Id ', nft.tokenId)
-            // const listing = await marketplaceContract.listItemsForSale(nftaddress, nft.tokenId, 1, listPrice)
-            // const txn = await listing.wait()
-            // console.log('txn receipt: ', txn)
+            console.log('listing item with Id ', nft.itemId)
+            console.log('list price:  ', listPrice)
+            const listing = await marketplaceContract.relistItem(nft.itemId)
+            const txn = await listing.wait()
+            console.log('txn receipt: ', txn)
         }
     }
 
