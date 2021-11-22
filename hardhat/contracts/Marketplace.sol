@@ -127,14 +127,14 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         uint etherToSeller = msg.value - royaltiesToMarketplace;
 
         IERC1155(nftAddress).safeTransferFrom(address(this), msg.sender, _tokenId, 1, '0x00');
-        (bool royaltiesTransferred, ) = payable(marketplaceOwner).call{value: royaltiesToMarketplace}(""); 
-        require(royaltiesTransferred, "Failed to transfer royalties to marketplace.");
-
-        (bool salePriceTransferred, ) = itemsMapping[_itemId].seller.call{value: etherToSeller}("");
-        require(salePriceTransferred, "Failed to transfer sale price to seller.");
-
         itemsMapping[_itemId].owner = payable(msg.sender);
         itemsMapping[_itemId].isListed = false;
+        
+        (bool royaltiesTransferred, ) = payable(marketplaceOwner).call{ value: royaltiesToMarketplace }('');
+        require(royaltiesTransferred, 'Failed to transfer royalties to marketplace.');
+
+        (bool salePriceTransferred, ) = itemsMapping[_itemId].seller.call{ value: etherToSeller }('');
+        require(salePriceTransferred, 'Failed to transfer sale price to seller.');
     }
 
     /**
@@ -174,14 +174,14 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         uint resultItemId = 0;
 
         for (uint i = 0; i < totalItemCount; i++) {
-            if (itemsMapping[i + 1].isListed == true && itemsMapping[i+1].owner != msg.sender) {
+            if (itemsMapping[i + 1].isListed == true && itemsMapping[i + 1].owner != msg.sender) {
                 itemsListedCount++;
             }
         }
 
         Item[] memory listedItems = new Item[](itemsListedCount);
         for (uint i = 0; i < totalItemCount; i++) {
-            if (itemsMapping[i + 1].isListed == true && itemsMapping[i+1].owner != msg.sender) {
+            if (itemsMapping[i + 1].isListed == true && itemsMapping[i + 1].owner != msg.sender) {
                 uint thisItemId = itemsMapping[i + 1].itemId;
                 Item storage thisItem = itemsMapping[thisItemId];
                 listedItems[resultItemId] = thisItem;

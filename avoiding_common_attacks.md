@@ -7,13 +7,15 @@
 -   Use of Require to ensure:
 
     -   List price of an item is greater than zero
-    -   Amount of Ether sent in equals to the item's list price when purchasing
+    -   Amount of Ether sent when purchasing an item is equal to the item's list price
+    -   Checks that the item is for sale before allowing it to be purchased
     -   Only the owner of an item is allowed to delist/relist it on the marketplace
     -   Only the owner of the ERC1155 token is allowed to call the setTokenURI function
     -   Only the owner of the ERC1155 token is allowed to burn the token
 
--   Using `.call` to send Ether instead of `.transfer`
+-   Using `.call` instead of `.transfer` to send Ether in the `purchaseItem` function
+-   Implemented Checks-Effects-Interactions to ensure external calls/transfer of Ether happen at the end of each function and after any necessary state changes have been made.
 
 ### Guarding Against Smart Contract Risks
 
--   Reentrancy Guard: nonReentrant modifier used in the `purchaseItem` function in `Marketplace.sol`
+-   Reentrancy Guard: nonReentrant modifier used in the `purchaseItem` function to prevent multiple calls from external caller draining the smart contract when it is exposed during the .call() function.
