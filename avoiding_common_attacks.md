@@ -11,7 +11,6 @@
     -   Checks that the item is for sale before allowing it to be purchased
     -   Only the owner of an item is allowed to delist/relist it on the marketplace
     -   Only the owner of the ERC1155 token is allowed to call the setTokenURI function
-    -   Only the owner of the ERC1155 token is allowed to burn the token
 
 -   Using `.call` instead of `.transfer` to send Ether in the `purchaseItem` function
 -   Implemented Checks-Effects-Interactions to ensure external calls/transfer of Ether happen at the end of each function and after any necessary state changes have been made.

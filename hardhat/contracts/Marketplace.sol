@@ -119,7 +119,9 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         uint price = itemsMapping[_itemId].price;
         uint _tokenId = itemsMapping[_itemId].tokenId;
         bool isForSale = itemsMapping[_itemId].isListed;
+        address owner = itemsMapping[_itemId].owner; 
 
+        require(owner != msg.sender, 'Buyer and Seller are the same addresses');     
         require(isForSale == true, 'Item requested is not for sale.');
         require(msg.value == price, 'Please submit the correct amount of ether.');
 
@@ -174,14 +176,14 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         uint resultItemId = 0;
 
         for (uint i = 0; i < totalItemCount; i++) {
-            if (itemsMapping[i + 1].isListed == true && itemsMapping[i + 1].owner != msg.sender) {
+            if (itemsMapping[i + 1].isListed == true) {
                 itemsListedCount++;
             }
         }
 
         Item[] memory listedItems = new Item[](itemsListedCount);
         for (uint i = 0; i < totalItemCount; i++) {
-            if (itemsMapping[i + 1].isListed == true && itemsMapping[i + 1].owner != msg.sender) {
+            if (itemsMapping[i + 1].isListed == true) {
                 uint thisItemId = itemsMapping[i + 1].itemId;
                 Item storage thisItem = itemsMapping[thisItemId];
                 listedItems[resultItemId] = thisItem;

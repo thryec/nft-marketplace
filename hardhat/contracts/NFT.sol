@@ -53,7 +53,7 @@ contract NFT is ERC1155, Ownable {
     */
     function setTokenURI(uint _tokenId, string memory newURI) public {
         bool owner = checkIfOwner(_tokenId);
-        require(owner == true);
+        require(owner == true, 'Function caller is not the owner of the token');
         require(bytes(_uris[_tokenId]).length == 0, 'Cannot set URI twice.');
         _uris[_tokenId] = newURI;
     }
@@ -65,8 +65,9 @@ contract NFT is ERC1155, Ownable {
         @param quantity amount of the token to be burned 
     */
     function burnTokens(uint _tokenId, uint quantity) public {
-        bool owner = checkIfOwner(_tokenId);
-        require(owner == true);
+        uint balance = balanceOf(msg.sender, _tokenId); 
+        bool isOwner = checkIfOwner(_tokenId);
+        require(isOwner == true, 'Function caller is not the owner of the token');
         _burn(msg.sender, _tokenId, quantity);
     }
 
