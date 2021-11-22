@@ -16,10 +16,10 @@ A simple Ethereum-based NFT Marketplace that allows users to mint NFTs, list the
 
 ```
 git clone https://github.com/thryec/nft-marketplace.git
-cd nft-marketplace=
+cd nft-marketplace
 ```
 
-2. Change into the hardhat folder and install the required dependencies
+2. Change into the hardhat folder and install the required dependencies:
 
 ```
 cd hardhat
@@ -39,11 +39,12 @@ npm install
 
     - `hardhat run scripts/deploy.js --network rinkeby`
     - This will return you the address of the deployed NFT and Marketplace contracts on Rinkeby printed in the console
-    - Replace these addresses in the `config.js` file found in the root of the repository
+    - Replace these addresses in the `config.js` file that is found in the root of the repository
 
 7. Start the app:
 
 ```
+cd ..
 cd client
 npm install
 npm run dev
@@ -72,7 +73,7 @@ A percentage of the sale price will go to the marketplace contract whenever a sa
 -   Hardhat
 -   ethers.js
 -   Chai
--   React.js
+-   Next.js
 -   IPFS
 -   Web3Modal
 -   dotenv
