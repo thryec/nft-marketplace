@@ -26,11 +26,9 @@ const Home = () => {
         const data = await marketplaceContract.getListedItems()
         const items = await Promise.all(
             data.map(async (el) => {
-                // console.log(el)
                 const tokenURI = await nftContract.getTokenURI(el.tokenId)
                 const res = await fetch(tokenURI)
                 const data = await res.json()
-                // console.log(data)
                 let price = ethers.utils.formatUnits(el.price.toString(), 'ether')
                 let item = {
                     price,
