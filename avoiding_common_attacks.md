@@ -1,21 +1,6 @@
-Using Specific Compiler Pragma
-Proper Use of Require, Assert and Revert
-Use Modifiers Only for Validation
-Pull Over Push (Prioritize receiving contract calls over making contract calls)
-Checks-Effects-Interactions (Avoiding state changes after external calls)
-Proper use of .call and .delegateCall
+# Avoiding Common Attacks
 
-## From Smart Contract Pitfalls and Attacks
-
-Not everything can be avoided, but you can write if you’re taking protection against:
-Re-entrancy
-Timestamp Dependence
-Forcibly Sending Ether
-Tx.Origin Authentication
-
-# My Implementations
-
-## Guarding Against Solidity Risks
+### Guarding Against Solidity Risks
 
 -   Using Solidity >= v0.8.0 that has SafeMath integrated to ensure automatic reverts for integer overflows. This feature is applied in the `purchaseItem` function in `Marketplace.sol` when calculating the amount of royalties that goes to the contract, and the remaining that goes to the seller of the item.
 
@@ -29,6 +14,6 @@ Tx.Origin Authentication
 
 -   Using `.call` to send Ether instead of `.transfer`
 
-## Guarding Against Smart Contract Risks
+### Guarding Against Smart Contract Risks
 
 -   Reentrancy Guard: nonReentrant modifier used in the `purchaseItem` function in `Marketplace.sol`
