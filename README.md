@@ -7,41 +7,46 @@ A simple Ethereum-based NFT Marketplace that allows users to mint NFTs, list the
 #### Prerequisites
 
 -   Node.js >= v14.0
--   Metamask Wallet connected to the Rinkeby testnet, with some ETH for testing
+-   Metamask Wallet installed in the browser
 -   Hardhat
 
-#### Contracts
+#### Local Setup
 
--   Change into the hardhat folder and install the required dependencies:
+1. Clone this repository and `cd` into the folder:
+
+```
+git clone https://github.com/thryec/nft-marketplace.git
+cd nft-marketplace=
+```
+
+2. Change into the hardhat folder and install the required dependencies
 
 ```
 cd hardhat
 npm install
-
 ```
 
--   Setting up Environment Variables:
+3. Set up Environment Variables:
 
-    -   Create a `.env` file directly under the Hardhat folder using `touch .env`.
-    -   Define your Rinkeby API endpoint and wallet private key in the `.env` file.
-    -   In `hardhat.config.js`, add `require('dotenv').config()` at the top, and make sure the variable names for your API URL and private key correspond to those in `.env`.
+    - Create a `.env` file directly under the Hardhat folder using `touch .env`
+    - Define your Rinkeby API endpoint and wallet private key in the `.env` file
+    - In `hardhat.config.js`, add `require('dotenv').config()` at the top, and make sure the variable names for your API URL and private key correspond to those in `.env`
 
--   To check that contracts properly compile: `hardhat compile`
--   To run tests on both contracts: `hardhat test`
--   To deploy contracts to the Rinkeby testnet:
-    -   `hardhat run scripts/deploy.js --network rinkeby`
-    -   This will return you the address of the deployed NFT and Marketplace contracts on Rinkeby printed in the console.
-    -   Replace these addresses in the `config.js` file found in the root of the repository.
+4. Check that contracts properly compile: `hardhat compile`
+5. Run tests on both contracts: `hardhat test`
 
-#### Frontend
+6. Deploy contracts to the Rinkeby testnet:
 
--   To run the project, enter the following:
+    - `hardhat run scripts/deploy.js --network rinkeby`
+    - This will return you the address of the deployed NFT and Marketplace contracts on Rinkeby printed in the console
+    - Replace these addresses in the `config.js` file found in the root of the repository
+
+7. Start the app:
 
 ```
 cd client
 npm install
 npm run dev
-
 ```
 
 ## Features
