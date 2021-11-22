@@ -169,8 +169,6 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         uint itemsListedCount = 0;
         uint resultItemId = 0;
 
-        // && itemsMapping[i+1].owner != msg.sender
-
         for (uint i = 0; i < totalItemCount; i++) {
             if (itemsMapping[i + 1].isListed == true && itemsMapping[i+1].owner != msg.sender) {
                 itemsListedCount++;
