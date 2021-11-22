@@ -14,11 +14,13 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Modal from '@mui/material/Modal'
 import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
 
 const myGallery = () => {
     const [myNFTs, setMyNFTs] = useState([])
     const [isLoaded, setIsLoaded] = useState(false)
     const [modalActive, setModalActive] = useState(false)
+    const [listPrice, setListPrice] = useState(0)
     const router = useRouter()
 
     const fetchMyNFTs = async () => {
@@ -56,32 +58,26 @@ const myGallery = () => {
         setIsLoaded(true)
     }
 
-    const listItem = async (itemId) => {
-        // const web3modal = new Web3Modal()
-        // const connection = await web3modal.connect()
-        // const provider = new ethers.providers.Web3Provider(connection)
-        // const signer = provider.getSigner()
+    const listItem = async (nft) => {
+        if (isNaN(listPrice)) {
+            alert('Please input an integer value as the price')
+        } else {
+            const web3modal = new Web3Modal()
+            const connection = await web3modal.connect()
+            const provider = new ethers.providers.Web3Provider(connection)
+            const signer = provider.getSigner()
 
-        // const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
+            const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
+            const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
+            console.log(signer)
+            const balance = await nftContract.balanceOf(signer.address, nft.tokenId)
+            console.log('signer token balance: ', balance)
 
-        console.log('listing item with itemId: ', itemId)
-        setModalActive(true)
-    }
-
-    const burnItem = async (tokenId) => {
-        const web3modal = new Web3Modal()
-        const connection = await web3modal.connect()
-        const provider = new ethers.providers.Web3Provider(connection)
-        const signer = provider.getSigner()
-
-        const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
-        const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
-
-        console.log('burning token with id ', tokenId)
-        const burn = await nftContract.burnTokens(tokenId, 1)
-        const txn = await burn.wait()
-        console.log('token burned, txn receipt: ', txn)
-        router.push('/gallery')
+            // console.log('listing token with Id ', nft.tokenId)
+            // const listing = await marketplaceContract.listItemsForSale(nftaddress, nft.tokenId, 1, listPrice)
+            // const txn = await listing.wait()
+            // console.log('txn receipt: ', txn)
+        }
     }
 
     const renderNFTs = myNFTs.map((el, i) => {
@@ -99,30 +95,44 @@ const myGallery = () => {
                 <CardActions>
                     <Button
                         onClick={() => {
-                            listItem(el.tokenId)
+                            setModalActive(true)
                         }}
                         size="small"
                     >
                         Sell
                     </Button>
-                    <Modal
-                        open={modalActive}
-                        onClose={() => {
-                            setModalActive(false)
-                        }}
-                        aria-labelledby="modal-modal-title"
-                        aria-describedby="modal-modal-description"
-                    >
-                        <Box sx={modalStyle}>
-                            <Typography id="modal-modal-title" variant="h6" component="h2">
-                                Text in a modal
-                            </Typography>
-                            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                            </Typography>
-                        </Box>
-                    </Modal>
                 </CardActions>
+                <Modal
+                    open={modalActive}
+                    onClose={() => {
+                        setModalActive(false)
+                    }}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    style={bgStyle}
+                >
+                    <Box sx={modalStyle}>
+                        <Stack direction="column" spacing={7}>
+                            <Typography id="modal-modal-title" variant="h4">
+                                Enter List Price
+                            </Typography>
+                            <TextField
+                                onChange={(e) => {
+                                    setListPrice(e.target.value)
+                                }}
+                                label="Sale Price"
+                            />
+                            <Button
+                                onClick={() => {
+                                    listItem(el)
+                                }}
+                                variant="contained"
+                            >
+                                List on Marketplace
+                            </Button>
+                        </Stack>
+                    </Box>
+                </Modal>
             </Card>
         )
     })
@@ -160,13 +170,18 @@ const modalStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 700,
-    height: 500,
-    bgcolor: 'background.paper',
-    border: '2px solid #aaa',
+    width: 600,
+    height: 400,
+    backgroundColor: 'background.paper',
+    border: '3px solid #aaa',
     borderRadius: '5%',
     boxShadow: 24,
     p: 4,
+}
+
+const bgStyle = {
+    backgroundColor: '#ffffff',
+    // opacity: 0.35,
 }
 
 const bodyStyle = {
