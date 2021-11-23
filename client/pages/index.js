@@ -78,7 +78,7 @@ const Home = () => {
                 <CardActions>
                     <Stack direction="row" spacing={5}>
                         <Button onClick={() => buyNFT(el)} size="small" variant="outlined">
-                            Purchase
+                            Buy
                         </Button>
                         <Typography variant="h6">{el.price} ETH</Typography>
                     </Stack>
@@ -93,9 +93,13 @@ const Home = () => {
 
     return isLoaded ? (
         <div style={bodyStyle}>
-            <Stack direction="row" spacing={2}>
-                {renderNFTs}
-            </Stack>
+            {listedNFTs.length === 0 ? (
+                <p>No Items Listed </p>
+            ) : (
+                <Stack direction="row" spacing={2}>
+                    {renderNFTs}
+                </Stack>
+            )}
         </div>
     ) : (
         <div style={bodyStyle}>Loading....</div>
