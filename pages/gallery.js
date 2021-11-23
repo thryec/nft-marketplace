@@ -1,7 +1,6 @@
 import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
 import Web3Modal from 'web3modal'
-import { useRouter } from 'next/dist/client/router'
 import { nftaddress, marketplaceaddress } from '../../config'
 import NFT from '../../hardhat/artifacts/contracts/NFT.sol/NFT.json'
 import Market from '../../hardhat/artifacts/contracts/Marketplace.sol/Marketplace.json'
@@ -21,7 +20,6 @@ const myGallery = () => {
     const [isLoaded, setIsLoaded] = useState(false)
     const [modalActive, setModalActive] = useState(false)
     const [listPrice, setListPrice] = useState(0)
-    const router = useRouter()
 
     const fetchMyNFTs = async () => {
         const web3modal = new Web3Modal()
@@ -60,7 +58,7 @@ const myGallery = () => {
 
     const listItem = async (nft) => {
         if (isNaN(listPrice)) {
-            alert('Please input an integer value as the price')
+            alert('Please input a valid integer value.')
         } else {
             const web3modal = new Web3Modal()
             const connection = await web3modal.connect()
@@ -69,15 +67,13 @@ const myGallery = () => {
 
             const nftContract = new ethers.Contract(nftaddress, NFT.abi, signer)
             const marketplaceContract = new ethers.Contract(marketplaceaddress, Market.abi, signer)
-            // console.log(signer)
-            // const balance = await nftContract.balanceOf(signer.address, nft.tokenId)
-            // console.log('signer token balance: ', balance)
 
-            console.log('listing item with Id ', nft.itemId)
-            console.log('list price:  ', listPrice)
-            const listing = await marketplaceContract.relistItem(nft.itemId)
+            console.log('listing item with Id ', nft.itemId, '....')
+            const price = ethers.utils.parseUnits(listPrice, 'ether')
+            const listing = await marketplaceContract.relistItem(nft.itemId, price)
             const txn = await listing.wait()
             console.log('txn receipt: ', txn)
+            setModalActive(false)
         }
     }
 
@@ -100,7 +96,7 @@ const myGallery = () => {
                         }}
                         size="small"
                     >
-                        Sell
+                        List
                     </Button>
                 </CardActions>
                 <Modal
@@ -138,18 +134,9 @@ const myGallery = () => {
         )
     })
 
-    const render = myNFTs.map((el, i) => {
-        return (
-            <div key={i}>
-                <img src={el.image} />
-                <p>{el.price} ETH</p>
-            </div>
-        )
-    })
-
-    // useEffect(() => {
-    //     fetchMyNFTs()
-    // }, [])
+    useEffect(() => {
+        fetchMyNFTs()
+    }, [])
 
     return isLoaded ? (
         <div style={bodyStyle}>
@@ -182,11 +169,10 @@ const modalStyle = {
 
 const bgStyle = {
     backgroundColor: '#ffffff',
-    // opacity: 0.35,
 }
 
 const bodyStyle = {
-    margin: 40,
+    margin: 50,
 }
 
 export default myGallery
