@@ -93,16 +93,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     ) internal {
         _itemIds.increment();
         uint itemId = _itemIds.current();
-        itemsMapping[itemId] = Item(
-            nftAddress,
-            _tokenId,
-            itemId,
-            msg.sender,
-            payable(msg.sender),
-            payable(msg.sender),
-            price,
-            true
-        );
+        itemsMapping[itemId] = Item(nftAddress, _tokenId, itemId, msg.sender, payable(msg.sender), payable(msg.sender), price, true);
 
         IERC1155(nftAddress).safeTransferFrom(msg.sender, address(this), _tokenId, 1, '0x00');
         emit ItemListed(nftAddress, _tokenId, itemId, msg.sender, msg.sender, address(0), price, true);
@@ -119,9 +110,9 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         uint price = itemsMapping[_itemId].price;
         uint _tokenId = itemsMapping[_itemId].tokenId;
         bool isForSale = itemsMapping[_itemId].isListed;
-        address owner = itemsMapping[_itemId].owner; 
+        address owner = itemsMapping[_itemId].owner;
 
-        require(owner != msg.sender, 'Buyer and Seller are the same addresses');     
+        require(owner != msg.sender, 'Buyer and Seller are the same addresses');
         require(isForSale == true, 'Item requested is not for sale.');
         require(msg.value == price, 'Please submit the correct amount of ether.');
 
@@ -129,9 +120,10 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         uint etherToSeller = msg.value - royaltiesToMarketplace;
 
         IERC1155(nftAddress).safeTransferFrom(address(this), msg.sender, _tokenId, 1, '0x00');
+        IERC1155(nftAddress).setApprovalForAll(msg.sender, true);
         itemsMapping[_itemId].owner = payable(msg.sender);
         itemsMapping[_itemId].isListed = false;
-        
+
         (bool royaltiesTransferred, ) = payable(marketplaceOwner).call{ value: royaltiesToMarketplace }('');
         require(royaltiesTransferred, 'Failed to transfer royalties to marketplace.');
 
@@ -140,30 +132,35 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     }
 
     /**
+        @notice Allows the owner of the NFT to relist their item. 
+        @dev Requires the caller to be the owner of the item. Sets the 'isListed' property of the item in the mapping to true. 
+        @param _itemId itemId of the NFT to be relisted
+    */
+    function relistItem(
+        address nftAddress,
+        uint _itemId,
+        uint listPrice
+    ) public {
+        console.log('relist msg sender', msg.sender); 
+        require(itemsMapping[_itemId].isListed == false, 'Item is already listed');
+        require(msg.sender == itemsMapping[_itemId].owner, 'Caller is not owner of item');
+        itemsMapping[_itemId].isListed = true;
+        itemsMapping[_itemId].price = listPrice;
+        uint _tokenId = itemsMapping[_itemId].tokenId;
+        IERC1155(nftAddress).safeTransferFrom(msg.sender, address(this), _tokenId, 1, '0x00');
+        emit ItemListed(nftAddress, _tokenId, _itemId, msg.sender, msg.sender, address(0), listPrice, true);
+    }
+
+    /**
         @notice Allows the owner of the NFT to delist their item 
         @dev Requires the caller to be the owner of the item. Sets the 'isListed' property of the item in the mapping to false. 
         @param _itemId itemId of the NFT to be delisted
     */
     function delistItem(uint _itemId) public {
-        require(itemsMapping[_itemId].isListed == true, 'Item not listed yet'); 
+        require(itemsMapping[_itemId].isListed == true, 'Item not listed yet');
         address itemOwner = itemsMapping[_itemId].owner;
         require(msg.sender == itemOwner, 'msg sender is not owner of item');
         itemsMapping[_itemId].isListed = false;
-    }
-
-    /**
-        @notice Allows the owner of the NFT to relist their item. 
-        @dev Requires the caller to be the owner of the item. Sets the 'isListed' property of the item in the mapping to true. 
-        @param _itemId itemId of the NFT to be relisted
-    */
-    function relistItem(uint _itemId, uint listPrice) public {
-        require(itemsMapping[_itemId].isListed == false, 'Item is already listed'); 
-        require(msg.sender == itemsMapping[_itemId].owner, 'msg sender is not owner of item');
-        itemsMapping[_itemId].isListed = true;
-        itemsMapping[_itemId].price = listPrice; 
-
-        IERC1155(nftAddress).safeTransferFrom(msg.sender, address(this), _tokenId, 1, '0x00');
-        emit ItemListed(nftAddress, _tokenId, itemId, msg.sender, msg.sender, address(0), price, true);
     }
 
     // ------------------ Read Functions ---------------------- //

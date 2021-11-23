@@ -68,12 +68,8 @@ describe('NFT Marketplace', function () {
     describe('Marketplace Transactions', async () => {
         beforeEach(async () => {
             await nft.mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 5, '0x00')
-            await nft
-                .connect(seller1)
-                .mintToken('https://ipfs.io/ipfs/QmSHwbRKSMEebYR8kSEzqm2an9FRJvuL7U9sARxwLS3kYo/', 10, '0x00')
-            await nft
-                .connect(seller2)
-                .mintToken('https://ipfs.io/ipfs/QmdkkCULcRZKQBTRLZGZnFSAwD65uL77AXPvB7rc3QVwnP', 15, '0x00')
+            await nft.connect(seller1).mintToken('https://ipfs.io/ipfs/QmSHwbRKSMEebYR8kSEzqm2an9FRJvuL7U9sARxwLS3kYo/', 10, '0x00')
+            await nft.connect(seller2).mintToken('https://ipfs.io/ipfs/QmdkkCULcRZKQBTRLZGZnFSAwD65uL77AXPvB7rc3QVwnP', 15, '0x00')
             await marketplace.connect(seller1).listItemsForSale(nftAddress, 2, 1, listPrice)
             await marketplace.connect(seller2).listItemsForSale(nftAddress, 3, 1, listPrice)
         })
@@ -87,9 +83,7 @@ describe('NFT Marketplace', function () {
         })
 
         it('Should throw an error if listPrice < 0', async () => {
-            await expect(marketplace.listItemsForSale(nftAddress, 1, 2, 0)).to.be.revertedWith(
-                'Item price must be greater than zero'
-            )
+            await expect(marketplace.listItemsForSale(nftAddress, 1, 2, 0)).to.be.revertedWith('Item price must be greater than zero')
         })
 
         it('Should transfer NFT to buyer when purchase is made', async () => {
@@ -147,11 +141,13 @@ describe('NFT Marketplace', function () {
             expect(originalListedItems.length - newListedItems.length).to.equal(1)
         })
 
-        it('Should allow owner of NFT to list an item they have purchased', async () => {
+        it('Should allow owner of NFT to relist an item they have purchased', async () => {
             await marketplace.connect(buyer1).purchaseItem(nftAddress, 1, { value: listPrice })
-            const originalListedItems = await marketplace.getListedItems()
-            // console.log('originalListedItems: ', originalListedItems)
-            await marketplace.connect(buyer1).relistItem(1)
+            const originalItemsOwned = await marketplace.connect(buyer1).getItemsOwned()
+            // console.log('originalItemsOwned: ', originalItemsOwned, 'buyer1: ', buyer1.address)
+
+            await marketplace.connect(buyer1).relistItem(nftAddress, 1, listPrice)
+            console.log('relisted')
             const newListedItems = await marketplace.getListedItems()
             // console.log('newListedItems: ', newListedItems)
             expect(newListedItems.length - originalListedItems.length).to.equal(1)
@@ -160,12 +156,8 @@ describe('NFT Marketplace', function () {
 
     describe('Retrieving Items', async () => {
         beforeEach(async () => {
-            await nft
-                .connect(seller1)
-                .mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 10, '0x00')
-            await nft
-                .connect(seller1)
-                .mintToken('https://ipfs.io/ipfs/QmQ35DkX8HHjhkJe5MsMAd4X51iP3MHV5d5dZoee32J83k', 5, '0x00')
+            await nft.connect(seller1).mintToken('https://ipfs.io/ipfs/QmXmNSH2dyp5R6dkW5MVhNc7xqV9v3NHWxNXJfCL6CcYxS', 10, '0x00')
+            await nft.connect(seller1).mintToken('https://ipfs.io/ipfs/QmQ35DkX8HHjhkJe5MsMAd4X51iP3MHV5d5dZoee32J83k', 5, '0x00')
             await marketplace.connect(seller1).listItemsForSale(nftAddress, 1, 2, listPrice)
             await marketplace.connect(seller1).listItemsForSale(nftAddress, 2, 2, listPrice)
         })
