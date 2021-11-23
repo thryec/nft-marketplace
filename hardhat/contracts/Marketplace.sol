@@ -161,6 +161,9 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         require(msg.sender == itemsMapping[_itemId].owner, 'msg sender is not owner of item');
         itemsMapping[_itemId].isListed = true;
         itemsMapping[_itemId].price = listPrice; 
+
+        IERC1155(nftAddress).safeTransferFrom(msg.sender, address(this), _tokenId, 1, '0x00');
+        emit ItemListed(nftAddress, _tokenId, itemId, msg.sender, msg.sender, address(0), price, true);
     }
 
     // ------------------ Read Functions ---------------------- //

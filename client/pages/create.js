@@ -119,18 +119,9 @@ const Create = () => {
                     }}
                 >
                     <TextField onChange={(e) => setItemInfo({ ...itemInfo, name: e.target.value })} label="Item Name" />
-                    <TextField
-                        onChange={(e) => setItemInfo({ ...itemInfo, description: e.target.value })}
-                        label="Item Description"
-                    />
-                    <TextField
-                        label="List Price"
-                        onChange={(e) => setItemInfo({ ...itemInfo, price: e.target.value })}
-                    />
-                    <TextField
-                        label="List Quantity"
-                        onChange={(e) => setItemInfo({ ...itemInfo, quantity: e.target.value })}
-                    />
+                    <TextField onChange={(e) => setItemInfo({ ...itemInfo, description: e.target.value })} label="Item Description" />
+                    <TextField label="List Price" onChange={(e) => setItemInfo({ ...itemInfo, price: e.target.value })} />
+                    <TextField label="List Quantity" onChange={(e) => setItemInfo({ ...itemInfo, quantity: e.target.value })} />
                 </Box>
                 <Button variant="outlined" component="label" style={{ margin: '20px auto' }}>
                     Upload File
@@ -171,7 +162,9 @@ const Create = () => {
 }
 
 const bodyStyle = {
-    margin: 70,
+    marginTop: 50,
+    marginLeft: 150,
+    marginRight: 150,
 }
 
 export default Create

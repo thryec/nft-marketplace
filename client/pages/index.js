@@ -12,10 +12,12 @@ import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
 
 const Home = () => {
     const [listedNFTs, setListedNFTs] = useState([])
     const [isLoaded, setIsLoaded] = useState(false)
+    const [isPending, setIsPending] = useState(false)
     const router = useRouter()
 
     const fetchListedNFTs = async () => {
@@ -49,6 +51,7 @@ const Home = () => {
     }
 
     const buyNFT = async (el) => {
+        setIsPending(true)
         const web3modal = new Web3Modal()
         const connection = await web3modal.connect()
         const provider = new ethers.providers.Web3Provider(connection)
@@ -60,6 +63,7 @@ const Home = () => {
         const txn = await contract.purchaseItem(nftaddress, el.itemId, { value: price })
         const receipt = await txn.wait()
         console.log('item purchased: ', receipt)
+        setIsPending(false)
         router.push('/gallery')
     }
 
@@ -76,7 +80,7 @@ const Home = () => {
                     </Typography>
                 </CardContent>
                 <CardActions>
-                    <Stack direction="row" spacing={5}>
+                    <Stack direction="row" spacing={14}>
                         <Button onClick={() => buyNFT(el)} size="small" variant="outlined">
                             Buy
                         </Button>
@@ -100,6 +104,12 @@ const Home = () => {
                     {renderNFTs}
                 </Stack>
             )}
+            {isPending && (
+                <div style={{ marginTop: 50 }}>
+                    <p>Please wait while your transaction is being mined...</p>
+                    <CircularProgress />
+                </div>
+            )}
         </div>
     ) : (
         <div style={bodyStyle}>Loading....</div>
@@ -107,7 +117,7 @@ const Home = () => {
 }
 
 const bodyStyle = {
-    margin: 40,
+    margin: 50,
 }
 
 export default Home
