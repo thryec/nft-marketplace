@@ -134,14 +134,14 @@ const myGallery = () => {
         )
     })
 
-    useEffect(() => {
-        fetchMyNFTs()
-    }, [])
+    // useEffect(() => {
+    //     fetchMyNFTs()
+    // }, [])
 
     return isLoaded ? (
         <div style={bodyStyle}>
             <Stack direction="row" spacing={2}>
-                {renderNFTs}
+                {myNFTs.length === 0 ? <p>No Items Owned </p> : renderNFTs}
             </Stack>
         </div>
     ) : (
