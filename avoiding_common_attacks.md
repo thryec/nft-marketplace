@@ -13,7 +13,7 @@
     -   Only the owner of the ERC1155 token is allowed to call the setTokenURI function
 
 -   (SWC-111) Using `.call` instead of `.transfer` to send Ether in the `purchaseItem` function
--   Implemented Checks-Effects-Interactions to ensure external calls/transfer of Ether happen at the end of each function and after any necessary state changes have been made.
+-   Implemented Checks-Effects-Interactions so that external calls or transfers of Ether happen at the end of each function and after any necessary state changes have been made, to prevent reentrancy attacks.
 
 ### Guarding Against Smart Contract Risks
 

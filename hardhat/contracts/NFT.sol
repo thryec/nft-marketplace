@@ -16,7 +16,7 @@ contract NFT is ERC1155, Ownable {
 
     mapping(uint => string) private _uris;
 
-    /// @notice initializes marketplace address to be used for setting approvals to allow marketplace to list the tokens.
+    /// @notice initializes marketplace address to be used for setting approvals to allow marketplace to manage tokens.
     constructor(address marketAddress) ERC1155('VastOcean') {
         marketplaceAddress = marketAddress;
     }
@@ -65,7 +65,6 @@ contract NFT is ERC1155, Ownable {
         @param quantity amount of the token to be burned 
     */
     function burnTokens(uint _tokenId, uint quantity) public {
-        uint balance = balanceOf(msg.sender, _tokenId); 
         bool isOwner = checkIfOwner(_tokenId);
         require(isOwner == true, 'Function caller is not the owner of the token');
         _burn(msg.sender, _tokenId, quantity);

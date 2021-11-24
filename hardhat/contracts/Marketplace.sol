@@ -141,12 +141,14 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
         uint _itemId,
         uint listPrice
     ) public {
-        console.log('relist msg sender', msg.sender); 
+        uint _tokenId = itemsMapping[_itemId].tokenId;
+        uint senderBalance = IERC1155(nftAddress).balanceOf(msg.sender, _tokenId);
         require(itemsMapping[_itemId].isListed == false, 'Item is already listed');
         require(msg.sender == itemsMapping[_itemId].owner, 'Caller is not owner of item');
+        require(senderBalance > 0, 'Caller does not own the tokens');
         itemsMapping[_itemId].isListed = true;
         itemsMapping[_itemId].price = listPrice;
-        uint _tokenId = itemsMapping[_itemId].tokenId;
+
         IERC1155(nftAddress).safeTransferFrom(msg.sender, address(this), _tokenId, 1, '0x00');
         emit ItemListed(nftAddress, _tokenId, _itemId, msg.sender, msg.sender, address(0), listPrice, true);
     }

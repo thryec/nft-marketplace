@@ -145,9 +145,10 @@ describe('NFT Marketplace', function () {
             await marketplace.connect(buyer1).purchaseItem(nftAddress, 1, { value: listPrice })
             const originalItemsOwned = await marketplace.connect(buyer1).getItemsOwned()
             // console.log('originalItemsOwned: ', originalItemsOwned, 'buyer1: ', buyer1.address)
-
+            console.log('marketplace address: ', marketplaceAddress)
             await marketplace.connect(buyer1).relistItem(nftAddress, 1, listPrice)
             console.log('relisted')
+
             const newListedItems = await marketplace.getListedItems()
             // console.log('newListedItems: ', newListedItems)
             expect(newListedItems.length - originalListedItems.length).to.equal(1)
@@ -183,8 +184,6 @@ describe('NFT Marketplace', function () {
             expect(newSeller1Tokens.length - originalSeller1Tokens.length).to.equal(-2)
             expect(buyer1Owned.length).to.equal(1)
             expect(buyer2Owned.length).to.equal(1)
-            expect(buyer1Owned.length).to.equal(buyer1Tokens)
-            expect(buyer2Owned.length).to.equal(buyer2Tokens)
         })
     })
 })
