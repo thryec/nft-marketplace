@@ -145,7 +145,7 @@ describe('NFT Marketplace', function () {
             await marketplace.connect(buyer1).purchaseItem(nftAddress, 1, { value: listPrice })
             const originalItemsOwned = await marketplace.connect(buyer1).getItemsOwned()
             // console.log('originalItemsOwned: ', originalItemsOwned, 'buyer1: ', buyer1.address)
-            console.log('marketplace address: ', marketplaceAddress)
+            await nft.setApprovalForAll(buyer1.address, true)
             await marketplace.connect(buyer1).relistItem(nftAddress, 1, listPrice)
             console.log('relisted')
 

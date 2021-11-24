@@ -59,7 +59,7 @@ contract NFT is ERC1155, Ownable {
     }
 
     /**
-        @notice Allows the owner of the NFT to send it to the zero address 
+        @notice Allows the owner of the NFT to send it to the zero address. To be implemented on frontend in future.  
         @dev Throws an error if the person calling the burn function is not the owner of the NFT. 
         @param _tokenId Id of the token to be burned 
         @param quantity amount of the token to be burned 
