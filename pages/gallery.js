@@ -70,7 +70,7 @@ const myGallery = () => {
 
             console.log('listing item with Id ', nft.itemId, '....')
             const price = ethers.utils.parseUnits(listPrice, 'ether')
-            const listing = await marketplaceContract.relistItem(nft.itemId, price)
+            const listing = await marketplaceContract.relistItem(nftaddress, nft.itemId, price)
             const txn = await listing.wait()
             console.log('txn receipt: ', txn)
             setModalActive(false)
