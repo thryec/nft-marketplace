@@ -154,7 +154,7 @@ contract Marketplace is ERC1155Holder, Ownable, ReentrancyGuard {
     }
 
     /**
-        @notice Allows the owner of the NFT to delist their item 
+        @notice Allows the owner of the NFT to delist their item. To be implemented on frontend in future. 
         @dev Requires the caller to be the owner of the item. Sets the 'isListed' property of the item in the mapping to false. 
         @param _itemId itemId of the NFT to be delisted
     */
