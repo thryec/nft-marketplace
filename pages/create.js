@@ -115,13 +115,15 @@ const Create = () => {
                     autoComplete="off"
                     m="auto"
                     sx={{
-                        '& .MuiTextField-root': { m: 1, width: '60ch' },
+                        '& .MuiTextField-root': { m: 1, width: '70ch' },
                     }}
                 >
-                    <TextField onChange={(e) => setItemInfo({ ...itemInfo, name: e.target.value })} label="Item Name" />
-                    <TextField onChange={(e) => setItemInfo({ ...itemInfo, description: e.target.value })} label="Item Description" />
-                    <TextField label="List Price" onChange={(e) => setItemInfo({ ...itemInfo, price: e.target.value })} />
-                    <TextField label="List Quantity" onChange={(e) => setItemInfo({ ...itemInfo, quantity: e.target.value })} />
+                    <Stack spacing={2} direction="column">
+                        <TextField onChange={(e) => setItemInfo({ ...itemInfo, name: e.target.value })} label="Item Name" />
+                        <TextField onChange={(e) => setItemInfo({ ...itemInfo, description: e.target.value })} label="Item Description" />
+                        <TextField label="List Price" onChange={(e) => setItemInfo({ ...itemInfo, price: e.target.value })} />
+                        <TextField label="List Quantity" onChange={(e) => setItemInfo({ ...itemInfo, quantity: e.target.value })} />
+                    </Stack>
                 </Box>
                 <Button variant="outlined" component="label" style={{ margin: '20px auto' }}>
                     Upload File

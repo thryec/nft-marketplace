@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
 import Web3Modal from 'web3modal'
+import { useRouter } from 'next/dist/client/router'
 import { nftaddress, marketplaceaddress } from '../../config'
 import NFT from '../../hardhat/artifacts/contracts/NFT.sol/NFT.json'
 import Market from '../../hardhat/artifacts/contracts/Marketplace.sol/Marketplace.json'
@@ -14,12 +15,15 @@ import Typography from '@mui/material/Typography'
 import Modal from '@mui/material/Modal'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
+import CircularProgress from '@mui/material/CircularProgress'
 
 const myGallery = () => {
     const [myNFTs, setMyNFTs] = useState([])
     const [isLoaded, setIsLoaded] = useState(false)
     const [modalActive, setModalActive] = useState(false)
-    const [listPrice, setListPrice] = useState(0)
+    const [listPrice, setListPrice] = useState(null)
+    const [isPending, setIsPending] = useState(false)
+    const router = useRouter()
 
     const fetchMyNFTs = async () => {
         const web3modal = new Web3Modal()
@@ -57,9 +61,10 @@ const myGallery = () => {
     }
 
     const listItem = async (nft) => {
-        if (isNaN(listPrice)) {
+        if (isNaN(listPrice) | (listPrice === null)) {
             alert('Please input a valid integer value.')
         } else {
+            setIsPending(true)
             const web3modal = new Web3Modal()
             const connection = await web3modal.connect()
             const provider = new ethers.providers.Web3Provider(connection)
@@ -77,6 +82,8 @@ const myGallery = () => {
             const txn = await listing.wait()
             console.log('item listed: ', txn)
             setModalActive(false)
+            setIsPending(false)
+            router.push('/')
         }
     }
 
@@ -112,7 +119,7 @@ const myGallery = () => {
                     style={bgStyle}
                 >
                     <Box sx={modalStyle}>
-                        <Stack direction="column" spacing={7}>
+                        <Stack direction="column" spacing={4} alignItems="center">
                             <Typography id="modal-modal-title" variant="h4">
                                 Enter List Price
                             </Typography>
@@ -120,7 +127,7 @@ const myGallery = () => {
                                 onChange={(e) => {
                                     setListPrice(e.target.value)
                                 }}
-                                label="Sale Price"
+                                label="List Price"
                             />
                             <Button
                                 onClick={() => {
@@ -128,8 +135,14 @@ const myGallery = () => {
                                 }}
                                 variant="contained"
                             >
-                                List on Marketplace
+                                Approve & List on Marketplace
                             </Button>
+                            {isPending && (
+                                <Box>
+                                    <p>Please wait while your transaction is being mined...</p>
+                                    <CircularProgress />
+                                </Box>
+                            )}
                         </Stack>
                     </Box>
                 </Modal>
@@ -168,6 +181,7 @@ const modalStyle = {
     borderRadius: '5%',
     boxShadow: 24,
     p: 4,
+    '& .MuiTextField-root': { width: '40ch' },
 }
 
 const bgStyle = {
