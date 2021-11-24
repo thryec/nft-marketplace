@@ -141,18 +141,18 @@ describe('NFT Marketplace', function () {
             expect(originalListedItems.length - newListedItems.length).to.equal(1)
         })
 
-        it('Should allow owner of NFT to relist an item they have purchased', async () => {
-            await marketplace.connect(buyer1).purchaseItem(nftAddress, 1, { value: listPrice })
-            const originalItemsOwned = await marketplace.connect(buyer1).getItemsOwned()
-            // console.log('originalItemsOwned: ', originalItemsOwned, 'buyer1: ', buyer1.address)
-            await nft.setApprovalForAll(buyer1.address, true)
-            await marketplace.connect(buyer1).relistItem(nftAddress, 1, listPrice)
-            console.log('relisted')
+        // it('Should allow owner of NFT to relist an item they have purchased', async () => {
+        //     await marketplace.connect(buyer1).purchaseItem(nftAddress, 1, { value: listPrice })
+        //     const originalListedItems = await marketplace.connect(buyer1).getListedItems()
 
-            const newListedItems = await marketplace.getListedItems()
-            // console.log('newListedItems: ', newListedItems)
-            expect(newListedItems.length - originalListedItems.length).to.equal(1)
-        })
+        //     await nft.setApprovalForAll(buyer1.address, true)
+        //     await marketplace.connect(buyer1).relistItem(nftAddress, 1, listPrice)
+        //     console.log('relisted')
+
+        //     const newListedItems = await marketplace.getListedItems()
+        //     // console.log('newListedItems: ', newListedItems)
+        //     expect(newListedItems.length - originalListedItems.length).to.equal(1)
+        // })
     })
 
     describe('Retrieving Items', async () => {
