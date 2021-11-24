@@ -17,7 +17,7 @@ import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import CircularProgress from '@mui/material/CircularProgress'
 
-const myGallery = () => {
+const Gallery = () => {
     const [myNFTs, setMyNFTs] = useState([])
     const [isLoaded, setIsLoaded] = useState(false)
     const [modalActive, setModalActive] = useState(false)
@@ -192,4 +192,4 @@ const bodyStyle = {
     margin: 50,
 }
 
-export default myGallery
+export default Gallery

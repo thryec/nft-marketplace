@@ -17,6 +17,7 @@ A simple Ethereum-based NFT Marketplace that allows users to mint NFTs, list the
 ```
 git clone https://github.com/thryec/nft-marketplace.git
 cd nft-marketplace
+npm install
 ```
 
 2. Change into the hardhat folder and install the required dependencies:
@@ -30,7 +31,7 @@ npm install
 
     - Create a `.env` file directly under the Hardhat folder using `touch .env`
     - Define your Rinkeby API endpoint and wallet private key in the `.env` file
-    - In `hardhat.config.js`, add `require('dotenv').config()` at the top, and make sure the variable names for your API URL and private key correspond to those in `.env`
+    - In `hardhat.config.js`, ensure the variable names for your API URL and private key correspond to those in `.env`
 
 4. Check that contracts properly compile: `hardhat compile`
 5. Run tests on both contracts: `hardhat test`
