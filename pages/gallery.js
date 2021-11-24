@@ -70,9 +70,12 @@ const myGallery = () => {
 
             console.log('listing item with Id ', nft.itemId, '....')
             const price = ethers.utils.parseUnits(listPrice, 'ether')
+            const approval = await nftContract.setApprovalForAll(marketplaceaddress, true)
+            const approvetxn = await approval.wait()
+            console.log('marketplace approved: ', approvetxn)
             const listing = await marketplaceContract.relistItem(nftaddress, nft.itemId, price)
             const txn = await listing.wait()
-            console.log('txn receipt: ', txn)
+            console.log('item listed: ', txn)
             setModalActive(false)
         }
     }
