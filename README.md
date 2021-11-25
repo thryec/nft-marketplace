@@ -2,6 +2,14 @@
 
 A simple Ethereum-based NFT Marketplace that allows users to mint NFTs, list them on the marketplace, and buy/sell NFTs with other Ethereum accounts.
 
+## Live Deployed Site
+
+https://react-refactor-test.netlify.app
+
+## Link to Screencast
+
+[https://www.youtube.com/watch?v=2YlMdIMYzhY](https://www.youtube.com/watch?v=2YlMdIMYzhY)
+
 ## Running this project locally
 
 #### Prerequisites

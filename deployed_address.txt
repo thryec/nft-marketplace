@@ -1,2 +1,2 @@
-ERC1155 Contract (Rinkeby): 
-Marketplace Contract (Rinkeby): 
+ERC1155 Contract (Rinkeby): 0x7A8d82Af204Fa79781e2aBeCede366E2837a1605
+Marketplace Contract (Rinkeby): 0x7A8d82Af204Fa79781e2aBeCede366E2837a1605
