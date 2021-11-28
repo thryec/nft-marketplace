@@ -90,6 +90,10 @@ Users can view all the NFTs they have minted, bought, and sold on the platform.
 
 A percentage of the sale price will go to the marketplace contract whenever a sale occurs. The amount of royalties is declared in the constructor when deploying the marketplace contract.
 
+## Public Wallet Address for Certification
+
+0x86c480486eB70482596091886b9D9c329c067958
+
 ## Dependencies
 
 -   Hardhat
@@ -99,7 +103,3 @@ A percentage of the sale price will go to the marketplace contract whenever a sa
 -   IPFS
 -   Web3Modal
 -   dotenv
-
-## Public Address for Certification
-
-0x86c480486eB70482596091886b9D9c329c067958
