@@ -12,13 +12,13 @@ https://nft-marketplace-consensys.netlify.app/
 
 ## Running this project locally
 
-#### Prerequisites
+### Prerequisites
 
 -   Node.js >= v14.0
 -   Metamask Wallet installed in the browser
 -   Hardhat
 
-#### Local Setup
+### Local Setup
 
 1. Clone this repository and `cd` into the folder:
 
@@ -35,30 +35,10 @@ cd hardhat
 npm install
 ```
 
-3.  Set up Environment Variables:
-
-    -   Create a `.env` file directly under the Hardhat folder using `touch .env`
-    -   Define your Rinkeby API endpoint and wallet private key in the `.env` file. This is what your `.env` file should look like:
-
-    ```
-        STAGING_INFURA_KEY=YOUR_RINKEBY_URL_HERE
-        PROD_INFURA_KEY=YOUR_RINKEBY_URL_HERE
-        PRIVATE_KEY=YOUR_METAMASK_WALLET_PRIVATE_KEY
-    ```
-
-    -   In `hardhat.config.js`, ensure the variable names for your API URL and private key correspond to those in `.env`
-
-4.  Check that contracts properly compile: `npx hardhat compile`
-5.  Run tests on both contracts: `npx hardhat test`
-6.  To deploy contracts locally: `npx hardhat run scripts/run.js`
-
-7.  Deploy contracts to the Rinkeby testnet:
-
-    -   `npx hardhat run scripts/deploy.js --network rinkeby`
-    -   This will return you the address of the deployed NFT and Marketplace contracts on Rinkeby printed in the console
-    -   Replace these addresses in the `config.js` file that is found in the root of the repository
-
-8.  Start the app:
+3.  Check that contracts properly compile: `npx hardhat compile`
+4.  Run tests on both contracts: `npx hardhat test`
+5.  To deploy and run contracts locally: `npx hardhat run scripts/run.js`
+6.  Start the frontend on localhost:
 
 ```
 cd ..
@@ -66,6 +46,29 @@ cd client
 npm install
 npm run dev
 ```
+
+### To deploy and run contracts on testnet:
+
+1.  Set up Environment Variables:
+
+    -   Create a `.env` file directly under the Hardhat folder using `touch .env`
+    -   Define your Rinkeby API endpoint and wallet private key in the `.env` file. This is what your `.env` file should look like:
+
+    ```
+        STAGING_RINKEBY_URL=YOUR_RINKEBY_URL_HERE
+        PROD_INFURA_KEY=YOUR_MAINNET_URL_HERE
+        PRIVATE_KEY=YOUR_METAMASK_WALLET_PRIVATE_KEY
+    ```
+
+    -   In `hardhat.config.js`, ensure the variable names for your API URL and private key correspond to those in `.env`
+
+2.  Deploy contracts to the Rinkeby testnet:
+
+    -   `npx hardhat run scripts/deploy.js --network rinkeby`
+    -   This will return you the address of the deployed NFT and Marketplace contracts on Rinkeby printed in the console
+    -   Replace these addresses in the `config.js` file that is found in the root of the repository
+
+3.  Start the frontend on localhost using the same method outlined above.
 
 Note: Due to some challenges faced when deploying this Next.JS app, if you wish to deploy the frontend of this project, please refer to https://github.com/thryec/marketplace-frontend. It contains the same functionality as the files in this repository, but refactored into React for ease of deployment.
 
