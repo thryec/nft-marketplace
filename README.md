@@ -86,3 +86,7 @@ A percentage of the sale price will go to the marketplace contract whenever a sa
 -   IPFS
 -   Web3Modal
 -   dotenv
+
+## Public Address for Certification
+
+0x86c480486eB70482596091886b9D9c329c067958
