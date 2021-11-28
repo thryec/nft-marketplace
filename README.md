@@ -41,8 +41,8 @@ npm install
     -   Define your Rinkeby API endpoint and wallet private key in the `.env` file. This is what your `.env` file should look like:
 
     ```
-        STAGING_ENDPOINT_KEY=YOUR_RINKEBY_URL_HERE
-        PROD_ENDPOINT_KEY=YOUR_RINKEBY_URL_HERE
+        STAGING_INFURA_KEY=YOUR_RINKEBY_URL_HERE
+        PROD_INFURA_KEY=YOUR_RINKEBY_URL_HERE
         PRIVATE_KEY=YOUR_METAMASK_WALLET_PRIVATE_KEY
     ```
 
