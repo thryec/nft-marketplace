@@ -59,7 +59,7 @@ npm install
 npm run dev
 ```
 
-Note: Due to some issues with deploying this Next.JS app, if you wish to deploy the frontend of this project, please refer to https://github.com/thryec/marketplace-frontend. It contains the same functionality as the files in this repository, but refactored into React for ease of deployment.
+Note: Due to some challenges faced when deploying this Next.JS app, if you wish to deploy the frontend of this project, please refer to https://github.com/thryec/marketplace-frontend. It contains the same functionality as the files in this repository, but refactored into React for ease of deployment.
 
 ## Features
 
