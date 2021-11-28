@@ -4,9 +4,9 @@ A simple Ethereum-based NFT Marketplace that allows users to mint NFTs, list the
 
 ## Live Deployed Site
 
-https://react-refactor-test.netlify.app
+https://nft-marketplace-consensys.netlify.app/
 
-## Link to Screencast
+## Screencast Link
 
 [https://www.youtube.com/watch?v=2YlMdIMYzhY](https://www.youtube.com/watch?v=2YlMdIMYzhY)
 
