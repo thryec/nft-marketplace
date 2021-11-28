@@ -35,22 +35,31 @@ cd hardhat
 npm install
 ```
 
-3. Set up Environment Variables:
+3.  Set up Environment Variables:
 
-    - Create a `.env` file directly under the Hardhat folder using `touch .env`
-    - Define your Rinkeby API endpoint and wallet private key in the `.env` file
-    - In `hardhat.config.js`, ensure the variable names for your API URL and private key correspond to those in `.env`
+        - Create a `.env` file directly under the Hardhat folder using `touch .env`
+        - Define your Rinkeby API endpoint and wallet private key in the `.env` file. Example:
 
-4. Check that contracts properly compile: `hardhat compile`
-5. Run tests on both contracts: `hardhat test`
+    ```
+        STAGING_ENDPOINT_KEY=YOUR_RINKEBY_URL_HERE
+        PROD_ENDPOINT_KEY=YOUR_RINKEBY_URL_HERE
+        PRIVATE_KEY=YOUR_METAMASK_WALLET_PRIVATE_KEY
 
-6. Deploy contracts to the Rinkeby testnet:
+    ```
 
-    - `hardhat run scripts/deploy.js --network rinkeby`
-    - This will return you the address of the deployed NFT and Marketplace contracts on Rinkeby printed in the console
-    - Replace these addresses in the `config.js` file that is found in the root of the repository
+        - In `hardhat.config.js`, ensure the variable names for your API URL and private key correspond to those in `.env`
 
-7. Start the app:
+4.  Check that contracts properly compile: `npx hardhat compile`
+5.  Run tests on both contracts: `npx hardhat test`
+6.  To deploy contracts locally: `npx hardhat run scripts/run.js`
+
+7.  Deploy contracts to the Rinkeby testnet:
+
+    -   `npx hardhat run scripts/deploy.js --network rinkeby`
+    -   This will return you the address of the deployed NFT and Marketplace contracts on Rinkeby printed in the console
+    -   Replace these addresses in the `config.js` file that is found in the root of the repository
+
+8.  Start the app:
 
 ```
 cd ..
