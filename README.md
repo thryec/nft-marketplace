@@ -37,8 +37,8 @@ npm install
 
 3.  Set up Environment Variables:
 
-        - Create a `.env` file directly under the Hardhat folder using `touch .env`
-        - Define your Rinkeby API endpoint and wallet private key in the `.env` file. Example:
+    -   Create a `.env` file directly under the Hardhat folder using `touch .env`
+    -   Define your Rinkeby API endpoint and wallet private key in the `.env` file. Example:
 
     ```
         STAGING_ENDPOINT_KEY=YOUR_RINKEBY_URL_HERE
@@ -47,7 +47,7 @@ npm install
 
     ```
 
-        - In `hardhat.config.js`, ensure the variable names for your API URL and private key correspond to those in `.env`
+    -   In `hardhat.config.js`, ensure the variable names for your API URL and private key correspond to those in `.env`
 
 4.  Check that contracts properly compile: `npx hardhat compile`
 5.  Run tests on both contracts: `npx hardhat test`
