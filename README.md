@@ -6,7 +6,7 @@ A simple Ethereum-based NFT Marketplace that allows users to mint NFTs, list the
 
 https://nft-marketplace-consensys.netlify.app/
 
-## Screencast Link
+## Demo Link
 
 [https://www.youtube.com/watch?v=2YlMdIMYzhY](https://www.youtube.com/watch?v=2YlMdIMYzhY)
 
